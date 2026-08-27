@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wonderingland - Test Your Knowledge</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a14;--card:rgba(255,255,255,.04);--glass:rgba(255,255,255,.06);--border:rgba(255,255,255,.08);--text:#e4e4e7;--muted:#71717a;--purple:#6c5ce7;--pink:#ec4899;--violet:#a855f7;--green:#22c55e;--red:#ef4444;--blue:#3b82f6}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.page{display:none;min-height:100vh;animation:fadeUp .4s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-15px) rotate(5deg)}}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes countUp{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+@keyframes timerPulse{0%,100%{box-shadow:0 0 0 0 rgba(108,92,231,.4)}50%{box-shadow:0 0 0 10px rgba(108,92,231,0)}}
+@keyframes confetti{0%{transform:translateY(-100vh) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;min-height:100vh;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(108,92,231,.15),transparent 70%);top:-100px;right:-100px;pointer-events:none}
+.hero::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(236,72,153,.1),transparent 70%);bottom:-50px;left:-50px;pointer-events:none}
+.floating{position:absolute;font-size:40px;opacity:.06;animation:float 6s ease-in-out infinite;pointer-events:none}
+.hero-title{font-size:clamp(48px,10vw,80px);font-weight:900;background:linear-gradient(135deg,#6c5ce7,#a855f7,#ec4899,#f43f5e);background-size:300% 300%;animation:gradientShift 4s ease infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px;line-height:1.1}
+.hero-sub{font-size:clamp(16px,3vw,22px);color:var(--muted);max-width:500px;margin-bottom:40px;line-height:1.5}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--violet));color:#fff;box-shadow:0 4px 20px rgba(108,92,231,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,92,231,.5)}
+.btn-secondary{background:var(--glass);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:rgba(255,255,255,.1)}
+.btn-sm{padding:10px 20px;font-size:14px;border-radius:10px}
+.stats-row{display:flex;gap:32px;margin-bottom:40px;flex-wrap:wrap;justify-content:center}
+.stat{text-align:center}
+.stat-num{font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:13px;color:var(--muted);margin-top:4px}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.section-title{font-size:28px;font-weight:800;margin-bottom:8px}
+.section-sub{color:var(--muted);margin-bottom:24px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.cat-card{padding:16px;background:var(--glass);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all .2s;text-align:center}
+.cat-card:hover{background:rgba(108,92,231,.1);border-color:rgba(108,92,231,.3)}
+.cat-card.selected{background:rgba(108,92,231,.2);border-color:var(--purple);box-shadow:0 0 20px rgba(108,92,231,.2)}
+.cat-card .cat-name{font-weight:700;font-size:14px;margin-bottom:4px}
+.cat-card .cat-count{font-size:12px;color:var(--muted)}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.setting-group{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:16px}
+.setting-group label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.setting-group select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:14px;font-family:inherit;outline:none}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.progress-bar{width:100%;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-bottom:16px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:2px;transition:width .3s ease}
+.q-counter{font-size:14px;color:var(--muted)}
+.q-score{font-size:14px;font-weight:700;color:var(--green)}
+.q-category{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(108,92,231,.15);color:var(--violet);margin-bottom:12px}
+.q-text{font-size:clamp(18px,4vw,24px);font-weight:700;line-height:1.4;margin-bottom:24px}
+.options{display:grid;gap:10px}
+.option{display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--glass);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;font-size:15px}
+.option:hover:not(.disabled){background:rgba(108,92,231,.1);border-color:rgba(108,92,231,.3);transform:translateX(4px)}
+.option .letter{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.option.correct{background:rgba(34,197,94,.15)!important;border-color:var(--green)!important}
+.option.correct .letter{background:var(--green);color:#fff}
+.option.wrong{background:rgba(239,68,68,.12)!important;border-color:var(--red)!important}
+.option.wrong .letter{background:var(--red);color:#fff}
+.option.disabled{cursor:default;opacity:.6}
+.timer-ring{position:relative;width:48px;height:48px}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-ring circle{fill:none;stroke-width:3}
+.timer-ring .bg{stroke:rgba(255,255,255,.08)}
+.timer-ring .fg{stroke:var(--purple);stroke-linecap:round;transition:stroke-dashoffset .5s linear}
+.timer-ring .time-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.timer-ring.urgent .fg{stroke:var(--red)}
+.timer-ring.urgent{animation:timerPulse 1s infinite}
+.results-box{text-align:center;padding:40px 20px;max-width:500px;margin:0 auto}
+.results-score{font-size:clamp(60px,15vw,100px);font-weight:900;background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:countUp .5s ease}
+.results-pct{font-size:20px;color:var(--muted);margin-bottom:8px}
+.results-msg{font-size:16px;margin-bottom:32px;color:var(--text)}
+.results-stats{display:flex;justify-content:center;gap:24px;margin-bottom:32px;flex-wrap:wrap}
+.results-stat{text-align:center;padding:12px 20px;background:var(--glass);border-radius:12px;border:1px solid var(--border)}
+.results-stat .val{font-size:20px;font-weight:800}
+.results-stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.results-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.review-list{text-align:left;max-width:600px;margin:24px auto 0}
+.review-item{padding:12px 16px;background:var(--glass);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:13px}
+.review-item.review-correct{border-left:3px solid var(--green)}
+.review-item.review-wrong{border-left:3px solid var(--red)}
+.review-q{font-weight:600;margin-bottom:4px}
+.review-a{color:var(--muted);font-size:12px}
+.review-a span{color:var(--green);font-weight:600}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;font-family:inherit;display:flex;align-items:center;gap:4px}
+.back-btn:hover{color:var(--text)}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;padding:12px 20px;background:rgba(10,10,20,.9);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;justify-content:center;z-index:100}
+.audio-fab{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:200}
+.audio-btn{width:52px;height:52px;border-radius:50%;border:1px solid var(--border);background:var(--glass);backdrop-filter:blur(10px);color:var(--text);font-size:22px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.audio-btn:hover{transform:scale(1.1);background:rgba(108,92,231,.2)}
+.audio-btn.off{opacity:.45}
+.audio-btn.on{background:linear-gradient(135deg,var(--purple),var(--violet));box-shadow:0 0 20px rgba(108,92,231,.5)}
+.voice-pop{position:fixed;bottom:90px;right:20px;background:rgba(10,10,20,.95);border:1px solid var(--border);border-radius:14px;padding:14px;z-index:200;width:220px;display:none;backdrop-filter:blur(12px)}
+.voice-pop.visible{display:block}
+.voice-pop label{display:block;font-size:11px;color:var(--muted);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.5px}
+.voice-pop select,.voice-pop input[type=range]{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-size:13px;font-family:inherit;outline:none}
+.voice-pop select{height:32px}
+@keyframes pulseVolume{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="pLanding" class="page active">
+  <div class="hero">
+    <div class="floating" style="top:10%;left:10%;animation-delay:0s">?</div>
+    <div class="floating" style="top:20%;right:15%;animation-delay:1s">?</div>
+    <div class="floating" style="bottom:25%;left:20%;animation-delay:2s">?</div>
+    <div class="floating" style="bottom:15%;right:10%;animation-delay:3s">?</div>
+    <div class="floating" style="top:40%;left:5%;animation-delay:1.5s;font-size:30px">Q</div>
+    <div class="floating" style="top:30%;right:8%;animation-delay:2.5s;font-size:50px">A</div>
+    <div class="hero-title">Wonderingland</div>
+    <div class="hero-sub">Test your knowledge across 25+ categories with over 1000 hard questions</div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num" id="totalQ">0</div><div class="stat-label">Questions</div></div>
+      <div class="stat"><div class="stat-num" id="totalC">0</div><div class="stat-label">Categories</div></div>
+      <div class="stat"><div class="stat-num" id="totalHS">0</div><div class="stat-label">High Score</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="showPage('pCategory')">Start Playing</button>
+  </div>
+</div>
+
+<!-- CATEGORY -->
+<div id="pCategory" class="page">
+  <div class="container" style="padding-top:40px">
+    <div class="nav-row"><button class="back-btn" onclick="showPage('pLanding')">← Back</button></div>
+    <div class="section-title">Choose Categories</div>
+    <div class="section-sub">Select one or more categories, or pick All / Random Mix</div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div style="text-align:center;margin-top:8px">
+      <button class="btn btn-primary" id="startFromCat" onclick="showPage('pSettings')" style="display:none">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="pSettings" class="page">
+  <div class="container" style="padding-top:40px">
+    <div class="nav-row"><button class="back-btn" onclick="showPage('pCategory')">← Back</button></div>
+    <div class="section-title">Quiz Settings</div>
+    <div class="section-sub">Customize your quiz</div>
+    <div class="settings-grid">
+      <div class="setting-group">
+        <label>Questions</label>
+        <select id="sCount"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option><option value="50">50</option><option value="0">All</option></select>
+      </div>
+      <div class="setting-group">
+        <label>Timer per Question</label>
+        <select id="sTimer"><option value="10">10 seconds</option><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option><option value="0">No limit</option></select>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <button class="btn btn-primary" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="pQuiz" class="page">
+  <div class="container" style="padding-top:24px">
+    <div class="quiz-header">
+      <div class="q-counter" id="qCounter">Q 1 / 20</div>
+      <div class="timer-ring" id="timerRing"><svg width="48" height="48"><circle class="bg" cx="24" cy="24" r="21"/><circle class="fg" id="timerFg" cx="24" cy="24" r="21" stroke-dasharray="131.95" stroke-dashoffset="0"/></svg><div class="time-text" id="timerText">20</div></div>
+      <div class="q-score" id="qScore">0 ✓</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="q-category" id="qCategory">Chemistry</div>
+    <div class="q-text" id="qText">Loading question...</div>
+    <div class="options" id="optionsBox"></div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="pResults" class="page">
+  <div class="container">
+    <div class="results-box">
+      <div class="results-score" id="rScore">0/10</div>
+      <div class="results-pct" id="rPct">0%</div>
+      <div class="results-msg" id="rMsg">Nice try!</div>
+      <div class="results-stats">
+        <div class="results-stat"><div class="val" id="rCorrect" style="color:var(--green)">0</div><div class="lbl">Correct</div></div>
+        <div class="results-stat"><div class="val" id="rWrong" style="color:var(--red)">0</div><div class="lbl">Wrong</div></div>
+        <div class="results-stat"><div class="val" id="rTime">0s</div><div class="lbl">Time</div></div>
+      </div>
+      <div class="results-actions">
+        <button class="btn btn-primary btn-sm" onclick="startQuiz()">Play Again</button>
+        <button class="btn btn-secondary btn-sm" onclick="showPage('pCategory')">Change Category</button>
+        <button class="btn btn-secondary btn-sm" onclick="shareResult()">Share Result</button>
+      </div>
+<div class="review-list" id="reviewList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="voice-pop" id="voicePop">
+  <label>Music Volume</label>
+  <input type="range" id="musicVol" min="0" max="1" step="0.05" value="0.5">
+</div>
+<div class="audio-fab">
+  <button class="audio-btn on" id="musicBtn" title="Background music">🎵</button>
+</div>
+
+<script>
+var BANK_RAW=[
+{ c:'Chemistry', q:'Which named reaction couples an organozinc with an aryl halide?', o:['Negishi coupling','Suzuki coupling','Stille coupling','Kumada coupling'], a:0 },
+{ c:'Chemistry', q:'What is the IUPAC name for the compound with formula CH3COCH3?', o:['Ethanal','Propanone','Butanal','Propanal'], a:1 },
+{ c:'Chemistry', q:'Which spectroscopy technique measures molecular vibrations?', o:['NMR','Raman','UV-Vis','Mass spectrometry'], a:1 },
+{ c:'Chemistry', q:'What named reaction forms epoxides from aldehydes and ketones?', o:['Darzens reaction','Wittig reaction','Aldol reaction','Claisen rearrangement'], a:0 },
+{ c:'Chemistry', q:'Which industrial process converts atmospheric nitrogen to ammonia?', o:['Haber-Bosch process','Contact process','Solvay process','Bayer process'], a:0 },
+{ c:'Chemistry', q:'What is the hybridization of the central atom in XeF4?', o:['sp3d','sp3d2','sp3','dsp3'], a:1 },
+{ c:'Chemistry', q:'Which named rearrangement involves a 1,2-shift in carbocations?', o:['Wagner-Meerwein','Beckmann','Curtius','Hofmann'], a:0 },
+{ c:'Chemistry', q:'What is the coordination number in [Co(NH3)6]3+?', o:['4','6','8','2'], a:1 },
+{ c:'Chemistry', q:'Which reagent is used for the Corey-Fuchs reaction?', o:['CBr4/PPh3','PBr3','SOBr2','HBr'], a:0 },
+{ c:'Chemistry', q:'What type of isomerism is shown by [Co(NH3)5NO2]Cl2?', o:['Geometric','Linkage','Optical','Ionization'], a:1 },
+{ c:'Chemistry', q:'Which named oxidation converts alkenes to diols?', o:['Lemieux-Johnson','Sharpless','Upjohn dihydroxylation','Jones oxidation'], a:2 },
+{ c:'Chemistry', q:'What is the crystal system of diamond?', o:['Cubic','Tetragonal','Hexagonal','Orthorhombic'], a:0 },
+{ c:'Chemistry', q:'Which reaction forms a β-keto ester from two esters?', o:['Claisen condensation','Aldol condensation','Michael addition','Robinson annulation'], a:0 },
+{ c:'Chemistry', q:'What named test distinguishes between primary and secondary alcohols?', o:['Lucas test','Tollen test','Fehling test','Beilstein test'], a:0 },
+{ c:'Chemistry', q:'Which metal catalyst is used in the Suzuki coupling?', o:['Palladium','Nickel','Platinum','Copper'], a:0 },
+{ c:'Chemistry', q:'What is the point group of ammonia?', o:['C3v','D3h','Td','C2v'], a:0 },
+{ c:'Chemistry', q:'Which named reduction uses lithium aluminium hydride?', o:['DIBAL-H reduction','LiAlH4 reduction','Catalytic hydrogenation','Birch reduction'], a:1 },
+{ c:'Chemistry', q:'What type of bond is present in diborane?', o:['3-center 2-electron','Double','Triple','Ionic'], a:0 },
+{ c:'Chemistry', q:'Which named reaction synthesizes indoles from arylhydrazines?', o:['Fischer indole synthesis','Hantzsch synthesis','Paal-Knorr synthesis','Sandmeyer reaction'], a:0 },
+{ c:'Chemistry', q:'What is the geometry of [Ni(CO)4]?', o:['Tetrahedral','Square planar','Octahedral','Trigonal bipyramidal'], a:0 },
+{ c:'Chemistry', q:'Which named effect causes splitting of spectral lines in magnetic fields?', o:['Zeeman effect','Stark effect','Raman effect','Doppler effect'], a:0 },
+{ c:'Chemistry', q:'What is the product of a Sandmeyer reaction with CuCN?', o:['Aryl nitrile','Aryl bromide','Aryl iodide','Aryl chloride'], a:0 },
+{ c:'Chemistry', q:'Which named reaction involves [2,3]-sigmatropic rearrangement?', o:['Wittig rearrangement','Beckmann rearrangement','Cope rearrangement','Claisen rearrangement'], a:0 },
+{ c:'Chemistry', q:'What is the hybridization in ferrocene?', o:['sp2','sp3','dsp3','sp'], a:0 },
+{ c:'Chemistry', q:'Which industrial process makes acetic acid from methanol?', o:['Monsanto process','Cativa process','Wacker process','Ziegler-Natta process'], a:0 },
+{ c:'Chemistry', q:'What named compound is [Co(NH3)5ONO]Cl2?', o:['Pentaamminecobalt(III) chloride','Pentaamminenitritocobalt(III) chloride','Hexaamminecobalt(III) chloride','Pentaamminenitratocobalt(III) chloride'], a:1 },
+{ c:'Chemistry', q:'Which reagent is used in the Appel reaction?', o:['PPh3/CCl4','PBr3','SOCl2','HCl'], a:0 },
+{ c:'Chemistry', q:'What is the crystal structure of sodium chloride?', o:['Rock salt','Zinc blende','Wurtzite','Fluorite'], a:0 },
+{ c:'Chemistry', q:'Which named reaction produces α-hydroxy ketones?', o:['Benzilic acid rearrangement','Pinacol rearrangement','Benzoin condensation','Cannizzaro reaction'], a:2 },
+{ c:'Chemistry', q:'What type of polymerization forms polyethylene?', o:['Addition','Condensation','Ring-opening','Coordination'], a:0 },
+{ c:'Chemistry', q:'Which named rearrangement converts ketoximes to amides?', o:['Beckmann rearrangement','Baeyer-Villiger oxidation','Fries rearrangement','Claisen rearrangement'], a:0 },
+{ c:'Chemistry', q:'What is the coordination number in Prussian blue?', o:['4','6','8','2'], a:1 },
+{ c:'Chemistry', q:'Which named synthesis uses diazonium salts as intermediates?', o:['Gomberg-Bachmann reaction','Ullmann coupling','Wurtz reaction','Fittig reaction'], a:0 },
+{ c:'Chemistry', q:'What is the IUPAC name for CH3CH(OH)CH3?', o:['Butan-2-ol','Propan-1-ol','Propan-2-ol','Butan-1-ol'], a:2 },
+{ c:'Chemistry', q:'Which named effect causes color changes in conjugated dyes?', o:['Solvatochromism','Piezochromism','Thermochromism','Photochromism'], a:0 },
+{ c:'Chemistry', q:'What metal is used in the Rosenmund reduction catalyst?', o:['Pd/BaSO4','Pt/C','Ni','Cu'], a:0 },
+{ c:'Chemistry', q:'Which named reaction forms β-lactones from ketenes and aldehydes?', o:['[2+2] cycloaddition','Diels-Alder','1,3-dipolar','Cheletropic'], a:0 },
+{ c:'Chemistry', q:'What is the point group of methane?', o:['Td','Oh','D4h','C2v'], a:0 },
+{ c:'Chemistry', q:'Which named oxidation uses osmium tetroxide?', o:['Upjohn dihydroxylation','Sharpless epoxidation','Swern oxidation','Jones oxidation'], a:0 },
+{ c:'Chemistry', q:'What type of magnetism is shown by O2?', o:['Paramagnetic','Diamagnetic','Ferromagnetic','Antiferromagnetic'], a:0 },
+{ c:'Chemistry', q:'Which named reaction couples aryl halides with alkynes?', o:['Sonogashira coupling','Suzuki coupling','Heck coupling','Stille coupling'], a:0 },
+{ c:'Chemistry', q:'What is the geometry of [Cu(NH3)4]2+?', o:['Square planar','Tetrahedral','Octahedral','Trigonal bipyramidal'], a:0 },
+{ c:'Chemistry', q:'Which industrial process makes polypropylene?', o:['Ziegler-Natta polymerization','Free radical polymerization','Anionic polymerization','Cationic polymerization'], a:0 },
+{ c:'Chemistry', q:'What named reaction forms vinyl ethers from alkynes?', o:['Reppe chemistry','Wacker process','Oxo process','Fischer-Tropsch'], a:0 },
+{ c:'Chemistry', q:'Which reagent is used in the Corey-Nicolaou macrolactonization?', o:['2,2\'-Dipyridyl disulfide/PPh3','DCC','EDC','HATU'], a:0 },
+{ c:'Chemistry', q:'What is the crystal structure of calcium fluoride?', o:['Fluorite','Rutile','Perovskite','Spinel'], a:0 },
+{ c:'Chemistry', q:'Which named reaction synthesizes furans from 1,4-dicarbonyls?', o:['Paal-Knorr synthesis','Hantzsch synthesis','Fischer indole','Sandmeyer'], a:0 },
+{ c:'Physics', q:'What effect causes phase shifts in light traveling in opposite directions?', o:['Sagnac effect','Faraday effect','Kerr effect','Pockels effect'], a:0 },
+{ c:'Physics', q:'Which effect describes birefringence induced by magnetic fields?', o:['Cotton-Mouton effect','Pockels effect','Kerr effect','Stark effect'], a:0 },
+{ c:'Physics', q:'What coefficients appear in quantum angular momentum addition?', o:['Clebsch-Gordan','Legendre','Hermite','Laguerre'], a:0 },
+{ c:'Physics', q:'Which experimental setup demonstrates spin quantization?', o:['Stern-Gerlach apparatus','Cavendish experiment','Michelson interferometer','Rutherford scattering'], a:0 },
+{ c:'Physics', q:'What is the Curie temperature of iron?', o:['1043 K','770 K','1184 K','1508 K'], a:0 },
+{ c:'Physics', q:'Which cosmological observation confirmed accelerated expansion?', o:['Type Ia supernovae','CMB anisotropies','Galaxy rotation curves','Quasar absorption lines'], a:0 },
+{ c:'Physics', q:'What effect causes frequency shifts in rotating frames?', o:['Sagnac effect','Coriolis effect','Magnus effect','Hall effect'], a:0 },
+{ c:'Physics', q:'Which effect describes electric-field-induced birefringence?', o:['Pockels effect','Faraday effect','Zeeman effect','Stark effect'], a:0 },
+{ c:'Physics', q:'What quantum number describes total angular momentum?', o:['J','L','S','M'], a:0 },
+{ c:'Physics', q:'Which phenomenon shows quantized energy levels in atoms?', o:['Spectral line emission','Blackbody radiation','Photoelectric effect','Compton scattering'], a:0 },
+{ c:'Physics', q:'What is the superfluid transition temperature of helium-4?', o:['2.17 K','4.22 K','1.25 K','3.09 K'], a:0 },
+{ c:'Physics', q:'Which effect describes light bending in gravitational fields?', o:['Gravitational lensing','Doppler effect','Cherenkov effect','Bremsstrahlung'], a:0 },
+{ c:'Physics', q:'What property distinguishes bosons from fermions?', o:['Integer vs half-integer spin','Mass','Charge','Color'], a:0 },
+{ c:'Physics', q:'Which experiment measured the electron magnetic moment?', o:['Deutsch-Jetpack experiment','Stern-Gerlach','Compton scattering','Millikan experiment'], a:0 },
+{ c:'Physics', q:'What is the critical magnetic field of type I superconductors?', o:['Hc','Hc1','Hc2','Hc3'], a:0 },
+{ c:'Physics', q:'Which effect causes spectral line splitting in electric fields?', o:['Stark effect','Zeeman effect','Paschen-Back effect','Holy effect'], a:0 },
+{ c:'Physics', q:'What is the Debye temperature of diamond?', o:['2200 K','340 K','1850 K','863 K'], a:0 },
+{ c:'Physics', q:'Which theory describes strong nuclear force?', o:['Quantum chromodynamics','Electroweak theory','String theory','Loop quantum gravity'], a:0 },
+{ c:'Physics', q:'What phenomenon allows superconducting current flow?', o:['Cooper pairing','Pauli exclusion','Bose-Einstein condensation','Quantum tunneling'], a:0 },
+{ c:'Physics', q:'Which effect describes magnetic field-induced dichroism?', o:['Faraday effect','Kerr effect','Cotton-Mouton effect','Pockels effect'], a:0 },
+{ c:'Physics', q:'What is the Chandrasekhar limit for white dwarfs?', o:['1.4 solar masses','2.1 solar masses','3.2 solar masses','0.8 solar masses'], a:0 },
+{ c:'Physics', q:'Which quantum number remains constant in fine structure?', o:['J','L','S','M_L'], a:0 },
+{ c:'Physics', q:'What is the Meissner effect in superconductors?', o:['Magnetic field expulsion','Resistance drop','Flux quantization','Josephson effect'], a:0 },
+{ c:'Physics', q:'Which effect describes light scattering by acoustic waves?', o:['Brillouin scattering','Raman scattering','Rayleigh scattering','Compton scattering'], a:0 },
+{ c:'Physics', q:'What is the Penrose process used for?', o:['Extracting black hole energy','Gravitational wave detection','Neutrino detection','Dark matter search'], a:0 },
+{ c:'Physics', q:'Which phenomenon causes quantum tunneling in semiconductors?', o:['Fowler-Nordheim tunneling','Thermionic emission','Field emission','Photoemission'], a:0 },
+{ c:'Physics', q:'What is the predicted mass of the Higgs boson before discovery?', o:['125 GeV/c2','91 GeV/c2','173 GeV/c2','45 GeV/c2'], a:0 },
+{ c:'Physics', q:'Which effect describes magnetization induced by magnetic fields?', o:['Cotton-Mouton effect','Pockels effect','Kerr effect','Faraday effect'], a:0 },
+{ c:'Physics', q:'What quantum effect allows electron emission from cold metals?', o:['Quantum tunneling','Photoelectric effect','Compton effect','Auger effect'], a:0 },
+{ c:'Physics', q:'Which isotope is used in atomic clocks?', o:['Cesium-133','Rubidium-87','Hydrogen-1','Strontium-87'], a:0 },
+{ c:'Physics', q:'What is the Larmor precession frequency dependent on?', o:['Magnetic field strength','Electric field','Temperature','Pressure'], a:0 },
+{ c:'Physics', q:'Which effect describes light absorption by atoms in magnetic fields?', o:['Zeeman effect','Stark effect','Raman effect','Doppler effect'], a:0 },
+{ c:'Physics', q:'What is the binding energy per nucleon of iron-56?', o:['8.8 MeV','7.1 MeV','9.8 MeV','6.5 MeV'], a:0 },
+{ c:'Physics', q:'Which phenomenon causes neutrino oscillations?', o:['Mass eigenstate mixing','Charge conjugation','Parity violation','CP violation'], a:0 },
+{ c:'Physics', q:'What is the Compton wavelength of the electron?', o:['2.43 pm','0.24 pm','24.3 pm','243 pm'], a:0 },
+{ c:'Physics', q:'Which effect describes electric field-induced birefringence?', o:['Pockels effect','Kerr effect','Faraday effect','Cotton-Mouton effect'], a:0 },
+{ c:'Physics', q:'What is the maximum number of electrons in a 4f subshell?', o:['14','10','6','2'], a:0 },
+{ c:'Physics', q:'Which experiment first detected gravitational waves?', o:['LIGO','LISA','VIRGO','ALIGO'], a:0 },
+{ c:'Physics', q:'What is the lifetime of the muon?', o:['2.2 microseconds','1.5 milliseconds','2.2 nanoseconds','15 milliseconds'], a:0 },
+{ c:'Physics', q:'Which quantum number determines orbital shape?', o:['Angular momentum','Principal','Spin','Magnetic'], a:0 },
+{ c:'Physics', q:'What effect causes electromagnetic induction?', o:['Faraday induction','Lenz effect','Hall effect','Thomson effect'], a:0 },
+{ c:'Physics', q:'Which is the smallest particle in the Standard Model?', o:['Electron','Quark','Neutrino','Photon'], a:1 },
+{ c:'Physics', q:'What is the escape velocity from a neutron star?', o:['100,000 km/s','50,000 km/s','200,000 km/s','300,000 km/s'], a:0 },
+{ c:'Physics', q:'Which effect describes light scattering in magnetic fields?', o:['Faraday rotation','Raman scattering','Brillouin scattering','Rayleigh scattering'], a:0 },
+{ c:'Physics', q:'What is the QCD scale parameter Λ?', o:['~200 MeV','~1 GeV','~10 MeV','~2 GeV'], a:0 },
+{ c:'Physics', q:'Which phenomenon allows quantum computing parallelism?', o:['Superposition','Entanglement','Tunneling','Decoherence'], a:0 },
+{ c:'Biology', q:'Which enzyme catalyzes the conversion of citrate to isocitrate?', o:['Aconitase','Isocitrate dehydrogenase','Citrate synthase','Fumarase'], a:0 },
+{ c:'Biology', q:'What is the primary signaling molecule in the Wnt pathway?', o:['β-catenin','cAMP','IP3','DAG'], a:0 },
+{ c:'Biology', q:'Which protein complex is responsible for spindle checkpoint?', o:['MAD2','APC/C','Cohesin','Condensin'], a:0 },
+{ c:'Biology', q:'What type of epistasis masks dominant alleles?', o:['Recessive','Dominant','Duplicate','Complementary'], a:0 },
+{ c:'Biology', q:'Which bacterial species causes Lyme disease?', o:['Borrelia burgdorferi','Treponema pallidum','Leptospira interrogans','Rickettsia rickettsii'], a:0 },
+{ c:'Biology', q:'What is the ecological term for species coevolution?', o:['Red Queen hypothesis','Competitive exclusion','Character displacement','Ecological release'], a:0 },
+{ c:'Biology', q:'Which enzyme replicates telomeres?', o:['Telomerase','DNA polymerase III','Topoisomerase','Primase'], a:0 },
+{ c:'Biology', q:'What signaling pathway is inhibited by cyclopamine?', o:['Hedgehog','Wnt','Notch','TGF-β'], a:0 },
+{ c:'Biology', q:'Which protein is mutated in cystic fibrosis?', o:['CFTR','BRCA1','p53','Rb'], a:0 },
+{ c:'Biology', q:'What is the term for gene expression regulation by RNA?', o:['RNA interference','DNA methylation','Histone acetylation','Chromatin remodeling'], a:0 },
+{ c:'Biology', q:'Which electron carrier has the highest reduction potential?', o:['Oxygen','NADH','FADH2','Cytochrome c'], a:0 },
+{ c:'Biology', q:'What is the function of the Rough ER?', o:['Protein synthesis','Lipid synthesis','Detoxification','Energy production'], a:0 },
+{ c:'Biology', q:'Which hormone stimulates erythropoiesis?', o:['Erythropoietin','Thrombopoietin','Leptin','Hepcidin'], a:0 },
+{ c:'Biology', q:'What is the term for cell death caused by swelling?', o:['Necrosis','Apoptosis','Autophagy','Pyroptosis'], a:0 },
+{ c:'Biology', q:'Which viral enzyme converts RNA to DNA?', o:['Reverse transcriptase','RNA polymerase','DNA polymerase','Integrase'], a:0 },
+{ c:'Biology', q:'What is the primary role of chaperone proteins?', o:['Protein folding','DNA replication','Transcription','Translation'], a:0 },
+{ c:'Biology', q:'Which bacteria are obligate intracellular parasites?', o:['Chlamydia','E. coli','Staphylococcus','Bacillus'], a:0 },
+{ c:'Biology', q:'What is the name for the apparent movement of chromosomes?', o:['Chromosomal rearrangement','Gene amplification','Nondisjunction','Translocation'], a:0 },
+{ c:'Biology', q:'Which pathway produces NADPH in the pentose phosphate pathway?', o:['Oxidative phase','Non-oxidative phase','Calvin cycle','Glycolysis'], a:0 },
+{ c:'Biology', q:'What is the function of the operon in prokaryotes?', o:['Gene regulation','Protein synthesis','DNA repair','Cell division'], a:0 },
+{ c:'Biology', q:'Which enzyme synthesizes prostaglandins?', o:['Cyclooxygenase','Lipoxygenase','Phospholipase A2','5-lipoxygenase'], a:0 },
+{ c:'Biology', q:'What is the term for immune self-tolerance breakdown?', o:['Autoimmunity','Immunodeficiency','Hypersensitivity','Tolerance'], a:0 },
+{ c:'Biology', q:'Which amino acid is coded by more than one codon?', o:['Leucine','Methionine','Tryptophan','Histidine'], a:0 },
+{ c:'Biology', q:'What is the function of the proteasome?', o:['Protein degradation','Protein synthesis','DNA repair','Lipid synthesis'], a:0 },
+{ c:'Biology', q:'Which bacteria fix atmospheric nitrogen?', o:['Rhizobium','E. coli','Streptococcus','Salmonella'], a:0 },
+{ c:'Biology', q:'What is the term for differential gene expression in cell types?', o:['Cell differentiation','Cell division','Cell migration','Cell adhesion'], a:0 },
+{ c:'Biology', q:'Which coenzyme carries acyl groups?', o:['Coenzyme A','NAD+','FAD','Thiamine pyrophosphate'], a:0 },
+{ c:'Biology', q:'What is the function of the sodium-potassium pump?', o:['Maintaining membrane potential','Protein synthesis','DNA replication','Cell signaling'], a:0 },
+{ c:'Biology', q:'Which vitamin is a precursor to NAD+?', o:['Niacin','Riboflavin','Thiamine','Pyridoxine'], a:0 },
+{ c:'Biology', q:'What is the term for large-scale gene expression changes?', o:['Epigenetic reprogramming','DNA methylation','Histone modification','Chromatin remodeling'], a:0 },
+{ c:'Biology', q:'Which organelle is the site of fatty acid oxidation?', o:['Peroxisome','Mitochondria','Lysosome','Endoplasmic reticulum'], a:1 },
+{ c:'Biology', q:'What is the name for programmed cell death with membrane blebbing?', o:['Apoptosis','Necrosis','Autophagy','Necroptosis'], a:0 },
+{ c:'Biology', q:'Which enzyme connects glycolysis to the citric acid cycle?', o:['Pyruvate dehydrogenase','Citrate synthase','Isocitrate dehydrogenase','Succinyl-CoA synthetase'], a:0 },
+{ c:'Biology', q:'What is the function of the sigma factor?', o:['Transcription initiation','Translation initiation','DNA replication','Protein folding'], a:0 },
+{ c:'Biology', q:'Which hormone regulates calcium homeostasis?', o:['Parathyroid hormone','Insulin','Glucagon','Thyroxine'], a:0 },
+{ c:'Biology', q:'What is the term for gene silencing by DNA methylation?', o:['Imprinting','Transcription','Translation','Replication'], a:0 },
+{ c:'Biology', q:'Which organelle contains digestive enzymes?', o:['Lysosome','Peroxisome','Golgi apparatus','Vacuole'], a:0 },
+{ c:'Biology', q:'What is the function of the ribosome?', o:['Protein synthesis','DNA replication','Transcription','Lipid synthesis'], a:0 },
+{ c:'Biology', q:'Which bacteria produce endospores?', o:['Bacillus','E. coli','Staphylococcus','Streptococcus'], a:0 },
+{ c:'Biology', q:'What is the term for cell communication through gap junctions?', o:['Plasmodesmata','Tight junctions','Desmosomes','Adherens junctions'], a:0 },
+{ c:'Biology', q:'Which enzyme catalyzes the committed step in cholesterol synthesis?', o:['HMG-CoA reductase','Acetyl-CoA carboxylase','Fatty acid synthase','HMG-CoA synthase'], a:0 },
+{ c:'Biology', q:'What is the function of heat shock proteins?', o:['Protein folding assistance','DNA repair','Transcription regulation','Lipid transport'], a:0 },
+{ c:'Biology', q:'Which signaling molecule activates NF-κB?', o:['TNF-α','Insulin','Epinephrine','Glucagon'], a:0 },
+{ c:'Biology', q:'What is the term for the flow of genetic information?', o:['Central dogma','Dogma','Genetic code','Replication'], a:0 },
+{ c:'Biology', q:'Which vitamin is essential for blood clotting?', o:['Vitamin K','Vitamin C','Vitamin D','Vitamin E'], a:0 },
+{ c:'Biology', q:'What is the function of telomeres?', o:['Protect chromosome ends','Gene regulation','DNA repair','Replication initiation'], a:0 },
+{ c:'Geography', q:'What is the area of Kazakhstan in square kilometers?', o:['2,724,900','1,981,000','2,422,000','3,074,000'], a:0 },
+{ c:'Geography', q:'Which country shares the longest border with China?', o:['Mongolia','India','Russia','Kazakhstan'], a:2 },
+{ c:'Geography', q:'What is the exact latitude of the North Pole?', o:['90°N','90°S','0°','180°'], a:0 },
+{ c:'Geography', q:'Which river has the largest drainage basin?', o:['Amazon','Congo','Nile','Mississippi'], a:0 },
+{ c:'Geography', q:'What is the deepest point in the Atlantic Ocean?', o:['Puerto Rico Trench','Mariana Trench','Java Trench','Tonga Trench'], a:0 },
+{ c:'Geography', q:'Which country has the most natural lakes?', o:['Canada','Finland','Sweden','Russia'], a:0 },
+{ c:'Geography', q:'What is the highest capital city by elevation?', o:['La Paz','Quito','Bogotá','Addis Ababa'], a:0 },
+{ c:'Geography', q:'Which strait separates Europe from Africa?', o:['Strait of Gibraltar','Bosphorus','Dardanelles','Strait of Hormuz'], a:0 },
+{ c:'Geography', q:'What is the exact longitude of the Prime Meridian?', o:['0°','180°','90°W','90°E'], a:0 },
+{ c:'Geography', q:'Which desert is the largest cold desert?', o:['Gobi','Karakum','Kyzylkum','Patagonian'], a:0 },
+{ c:'Geography', q:'What is the area of Australia in square kilometers?', o:['7,692,024','8,515,767','6,438,013','7,835,620'], a:0 },
+{ c:'Geography', q:'Which country has the longest coastline?', o:['Canada','Indonesia','Norway','Australia'], a:0 },
+{ c:'Geography', q:'What is the exact latitude of Singapore?', o:['1°17\'N','0°0\'','5°0\'N','2°0\'N'], a:0 },
+{ c:'Geography', q:'Which lake is the largest by surface area in Africa?', o:['Victoria','Tanganyika','Malawi','Turkana'], a:0 },
+{ c:'Geography', q:'What is the highest mountain in the Alps?', o:['Mont Blanc','Matterhorn','Eiger','Jungfrau'], a:0 },
+{ c:'Geography', q:'Which country has the highest population density?', o:['Monaco','Singapore','Bangladesh','Bahrain'], a:0 },
+{ c:'Geography', q:'What is the exact latitude of the Tropic of Capricorn?', o:['23°26\'S','23°26\'N','0°','66°34\'S'], a:0 },
+{ c:'Geography', q:'Which river flows through the most countries?', o:['Danube','Rhine','Nile','Amazon'], a:0 },
+{ c:'Geography', q:'What is the area of Greenland in square kilometers?', o:['2,166,086','1,753,000','2,344,858','1,959,360'], a:0 },
+{ c:'Geography', q:'Which country has the most time zones?', o:['France','Russia','USA','China'], a:0 },
+{ c:'Geography', q:'What is the deepest lake in the world?', o:['Baikal','Tanganyika','Caspian Sea','Huron'], a:0 },
+{ c:'Geography', q:'Which waterfall is the tallest in the world?', o:['Angel Falls','Tugela Falls','Tres Hermanas Falls','Olo\'upena Falls'], a:0 },
+{ c:'Geography', q:'What is the exact longitude of the International Date Line?', o:['180°','0°','90°E','90°W'], a:0 },
+{ c:'Geography', q:'Which country has the highest point in Africa?', o:['Tanzania','Kenya','Ethiopia','Uganda'], a:0 },
+{ c:'Geography', q:'What is the area of the Caspian Sea in square kilometers?', o:['371,000','424,000','336,000','458,000'], a:0 },
+{ c:'Geography', q:'Which city is located at the exact center of the Earth\'s landmass?', o:['Kırşehir, Turkey','Ankara, Turkey','Istanbul, Turkey','Cappadocia, Turkey'], a:0 },
+{ c:'Geography', q:'What is the smallest country in the world by area?', o:['Vatican City','Monaco','Nauru','San Marino'], a:0 },
+{ c:'Geography', q:'Which ocean has the highest average temperature?', o:['Indian','Atlantic','Pacific','Arctic'], a:0 },
+{ c:'Geography', q:'What is the exact latitude of the Arctic Circle?', o:['66°34\'N','66°34\'S','23°26\'N','23°26\'S'], a:0 },
+{ c:'Geography', q:'Which island is the largest in the Mediterranean?', o:['Sicily','Sardinia','Corsica','Cyprus'], a:0 },
+{ c:'Geography', q:'What is the highest recorded temperature in Africa?', o:['55°C','57.8°C','52°C','58.3°C'], a:1 },
+{ c:'Geography', q:'Which country has the most active volcanoes?', o:['Indonesia','Japan','USA','Italy'], a:0 },
+{ c:'Geography', q:'What is the length of the Nile River in kilometers?', o:['6,650','6,853','6,345','6,992'], a:0 },
+{ c:'Geography', q:'Which mountain range contains the highest peak in Europe?', o:['Caucasus','Alps','Pyrenees','Carpathians'], a:0 },
+{ c:'Geography', q:'What is the exact latitude of the Equator?', o:['0°','90°N','90°S','23°26\'N'], a:0 },
+{ c:'Geography', q:'Which inland sea is the largest by area?', o:['Caspian Sea','Black Sea','Baltic Sea','Red Sea'], a:0 },
+{ c:'Geography', q:'What is the capital of Bhutan?', o:['Thimphu','Paro','Punakha','Jakar'], a:0 },
+{ c:'Geography', q:'Which canal connects the Red Sea to the Mediterranean?', o:['Suez Canal','Panama Canal','Corinth Canal','Kiel Canal'], a:0 },
+{ c:'Geography', q:'What is the area of Iceland in square kilometers?', o:['103,000','110,560','83,720','96,400'], a:1 },
+{ c:'Geography', q:'Which country has the most UNESCO World Heritage Sites?', o:['Italy','China','France','Spain'], a:0 },
+{ c:'Geography', q:'What is the exact longitude of Greenwich Observatory?', o:['0°0\'5"','0°','0°0\'0"','0°1\'0"'], a:0 },
+{ c:'Geography', q:'Which strait connects the Black Sea to the Sea of Marmara?', o:['Bosphorus','Dardanelles','Strait of Gibraltar','Strait of Hormuz'], a:0 },
+{ c:'Mathematics', q:'What is the smallest perfect number?', o:['6','28','496','8128'], a:0 },
+{ c:'Mathematics', q:'Which theorem relates to the distribution of prime numbers?', o:['Prime Number Theorem','Fermat\'s Last Theorem','Riemann Hypothesis','Goldbach\'s conjecture'], a:0 },
+{ c:'Mathematics', q:'What is the name for a number equal to the sum of its divisors?', o:['Perfect number','Amicable number','Abundant number','Deficient number'], a:0 },
+{ c:'Mathematics', q:'Which group has exactly 6 elements?', o:['S3','S4','A4','Z6'], a:0 },
+{ c:'Mathematics', q:'What is the genus of a torus?', o:['1','0','2','3'], a:0 },
+{ c:'Mathematics', q:'Which test determines series convergence?', o:['Ratio test','Fibonacci test','Prime test','Quadratic test'], a:0 },
+{ c:'Mathematics', q:'What is the Euler characteristic of a sphere?', o:['2','0','1','3'], a:0 },
+{ c:'Mathematics', q:'Which field studies geometric transformations?', o:['Topology','Algebra','Number theory','Combinatorics'], a:0 },
+{ c:'Mathematics', q:'What is the smallest non-abelian simple group?', o:['A5','PSL(2,7)','A6','PSL(2,11)'], a:0 },
+{ c:'Mathematics', q:'Which constant is approximately 2.71828?', o:['e','π','φ','√2'], a:0 },
+{ c:'Mathematics', q:'What is the dimension of a projective plane?', o:['2','3','1','4'], a:0 },
+{ c:'Mathematics', q:'Which theorem states every finite group has a composition series?', o:['Jordan-Hölder theorem','Lagrange\'s theorem','Sylow theorems','Cauchy\'s theorem'], a:0 },
+{ c:'Mathematics', q:'What is the chromatic number of the Petersen graph?', o:['3','4','5','2'], a:0 },
+{ c:'Mathematics', q:'Which polynomial has no real roots of degree 5?', o:['x^5-x+1','x^5-1','x^5+x','x^5-x'], a:0 },
+{ c:'Mathematics', q:'What is the value of the Riemann zeta function at 2?', o:['π²/6','π²/12','π²/8','π²/4'], a:0 },
+{ c:'Mathematics', q:'Which geometry uses hyperbolic space?', o:['Non-Euclidean','Euclidean','Analytic','Projective'], a:0 },
+{ c:'Mathematics', q:'What is the largest prime factor of 2^31-1?', o:['2147483647','127','8191','131071'], a:0 },
+{ c:'Mathematics', q:'Which theorem guarantees existence of eigenvalues?', o:['Spectral theorem','Cayley-Hamilton','Schur decomposition','Jordan normal form'], a:0 },
+{ c:'Mathematics', q:'What is the determinant of a 3×3 identity matrix?', o:['1','0','3','9'], a:0 },
+{ c:'Mathematics', q:'Which theorem applies to right triangles?', o:['Pythagorean theorem','Fermat\'s theorem','Taylor\'s theorem','Mean value theorem'], a:0 },
+{ c:'Mathematics', q:'What is the sum of interior angles in a pentagon?', o:['540°','720°','360°','180°'], a:0 },
+{ c:'Mathematics', q:'Which algebraic structure has two binary operations?', o:['Field','Group','Ring','Monoid'], a:0 },
+{ c:'Mathematics', q:'What is the fundamental theorem of algebra about?', o:['Polynomial roots','Prime distribution','Integral evaluation','Differential equations'], a:0 },
+{ c:'Mathematics', q:'Which test determines if a series is absolutely convergent?', o:['Comparison test','Ratio test','Root test','Integral test'], a:0 },
+{ c:'Mathematics', q:'What is the order of the alternating group A4?', o:['12','24','6','8'], a:0 },
+{ c:'Mathematics', q:'Which curve has constant curvature?', o:['Circle','Ellipse','Parabola','Hyperbola'], a:0 },
+{ c:'Mathematics', q:'What is the formula for the nth triangular number?', o:['n(n+1)/2','n^2','n(n-1)/2','2n'], a:0 },
+{ c:'Mathematics', q:'Which theorem states every bounded monotone sequence converges?', o:['Monotone convergence theorem','Bolzano-Weierstrass','Intermediate value theorem','Extreme value theorem'], a:0 },
+{ c:'Mathematics', q:'What is the smallest perfect square greater than 1?', o:['4','9','16','25'], a:0 },
+{ c:'Mathematics', q:'Which operation makes a set a group?', o:['Closure','Commutativity','Distributivity','Associativity'], a:0 },
+{ c:'Mathematics', q:'What is the value of 0!?', o:['1','0','undefined','∞'], a:0 },
+{ c:'Mathematics', q:'Which number system extends reals with infinitesimals?', o:['Surreal numbers','Complex numbers','Quaternions','Octonions'], a:0 },
+{ c:'Mathematics', q:'What is the base of natural logarithms?', o:['e','10','2','π'], a:0 },
+{ c:'Mathematics', q:'Which theorem relates to the number of edges and vertices?', o:['Euler\'s formula','Fermat\'s theorem','Green\'s theorem','Stokes\' theorem'], a:0 },
+{ c:'Mathematics', q:'What is the dimension of a vector space with basis size 4?', o:['4','2','8','16'], a:0 },
+{ c:'Mathematics', q:'Which metric gives shortest path on a sphere?', o:['Great circle distance','Euclidean distance','Manhattan distance','Chebyshev distance'], a:0 },
+{ c:'Mathematics', q:'What is the smallest abundant number?', o:['12','6','18','24'], a:0 },
+{ c:'Mathematics', q:'Which conjecture was proved by Andrew Wiles?', o:['Fermat\'s Last Theorem','Goldbach\'s conjecture','Collatz conjecture','Riemann Hypothesis'], a:0 },
+{ c:'Mathematics', q:'What is the cardinality of natural numbers?', o:['ℵ0','ℵ1','c','ℵ2'], a:0 },
+{ c:'Mathematics', q:'Which proof method uses contradiction?', o:['Indirect proof','Direct proof','Induction','Construction'], a:0 },
+{ c:'Mathematics', q:'What is the sum of first n odd numbers?', o:['n²','n(n+1)/2','2n','n²-1'], a:0 },
+{ c:'Mathematics', q:'Which operation is not associative in general?', o:['Subtraction','Addition','Multiplication','Union'], a:0 },
+{ c:'Mathematics', q:'What is the determinant of a singular matrix?', o:['0','1','-1','undefined'], a:0 },
+{ c:'Technology', q:'Which design pattern ensures a class has only one instance?', o:['Singleton','Factory','Builder','Prototype'], a:0 },
+{ c:'Technology', q:'What is the port number for HTTPS?', o:['443','80','8080','22'], a:0 },
+{ c:'Technology', q:'Which algorithm sorts in O(n log n) time?', o:['Merge sort','Bubble sort','Selection sort','Insertion sort'], a:0 },
+{ c:'Technology', q:'What does DNS stand for?', o:['Domain Name System','Dynamic Network Service','Data Network Security','Direct Name Server'], a:0 },
+{ c:'Technology', q:'Which protocol uses port 22?', o:['SSH','HTTP','FTP','SMTP'], a:0 },
+{ c:'Technology', q:'What is the time complexity of binary search?', o:['O(log n)','O(n)','O(n²)','O(1)'], a:0 },
+{ c:'Technology', q:'Which company developed the Unix operating system?', o:['Bell Labs','Microsoft','Apple','IBM'], a:0 },
+{ c:'Technology', q:'What is the maximum value of an 8-bit unsigned integer?', o:['255','256','128','127'], a:0 },
+{ c:'Technology', q:'Which data structure uses LIFO ordering?', o:['Stack','Queue','Heap','Tree'], a:0 },
+{ c:'Technology', q:'What does API stand for?', o:['Application Programming Interface','Advanced Protocol Integration','Automated Programming Interface','Application Process Integration'], a:0 },
+{ c:'Technology', q:'Which hash function produces 128-bit output?', o:['MD5','SHA-256','SHA-512','CRC32'], a:0 },
+{ c:'Technology', q:'What is the purpose of ARP?', o:['IP to MAC address resolution','DNS resolution','DHCP assignment','Route optimization'], a:0 },
+{ c:'Technology', q:'Which sorting algorithm has worst-case O(n²)?', o:['Quicksort','Merge sort','Heapsort','Timsort'], a:0 },
+{ c:'Technology', q:'What year was the first iPhone released?', o:['2007','2005','2008','2010'], a:0 },
+{ c:'Technology', q:'Which protocol is used for email sending?', o:['SMTP','POP3','IMAP','HTTP'], a:0 },
+{ c:'Technology', q:'What is the maximum number of nodes in a binary tree of height h?', o:['2^(h+1)-1','2^h','2^h-1','h^2'], a:0 },
+{ c:'Technology', q:'Which company created the Java programming language?', o:['Sun Microsystems','Microsoft','IBM','Oracle'], a:0 },
+{ c:'Technology', q:'What is the function of a firewall?', o:['Network security filtering','Data encryption','File sharing','Email routing'], a:0 },
+{ c:'Technology', q:'Which database uses SQL as its query language?', o:['MySQL','MongoDB','Redis','Cassandra'], a:0 },
+{ c:'Technology', q:'What does RAID stand for?', o:['Redundant Array of Independent Disks','Random Access Information Data','Rapid Application Integration Device','Reliable Array of Indexed Data'], a:0 },
+{ c:'Technology', q:'Which programming language was created by Bjarne Stroustrup?', o:['C++','C','Java','Python'], a:0 },
+{ c:'Technology', q:'What is the purpose of a load balancer?', o:['Distribute traffic across servers','Encrypt data','Cache content','Route packets'], a:0 },
+{ c:'Technology', q:'Which HTTP method is used to update a resource?', o:['PUT','GET','DELETE','POST'], a:0 },
+{ c:'Technology', q:'What is the maximum transmission unit of Ethernet?', o:['1500 bytes','1024 bytes','2048 bytes','4096 bytes'], a:0 },
+{ c:'Technology', q:'Which algorithm is used for public key encryption?', o:['RSA','DES','AES','Blowfish'], a:0 },
+{ c:'Technology', q:'What is the time complexity of hash table lookup?', o:['O(1) average','O(n)','O(log n)','O(n²)'], a:0 },
+{ c:'Technology', q:'Which company developed the Python programming language?', o:['Guido van Rossum','Sun Microsystems','Microsoft','Google'], a:0 },
+{ c:'Technology', q:'What is the function of a CDN?', o:['Content delivery network','Central data node','Cloud computing','Caching service'], a:0 },
+{ c:'Technology', q:'Which port is used by HTTP?', o:['80','443','22','21'], a:0 },
+{ c:'Technology', q:'What is the purpose of a virtual machine?', o:['Run multiple OS on one hardware','Faster processing','Data compression','Network routing'], a:0 },
+{ c:'Technology', q:'Which data structure is used in BFS?', o:['Queue','Stack','Heap','Graph'], a:0 },
+{ c:'Technology', q:'What does SSL stand for?', o:['Secure Sockets Layer','Standard Security Layer','System Software Library','Server Side Language'], a:0 },
+{ c:'Technology', q:'Which protocol is connectionless?', o:['UDP','TCP','HTTP','FTP'], a:0 },
+{ c:'Technology', q:'What is the purpose of Git?', o:['Version control','Package management','Compilation','Testing'], a:0 },
+{ c:'Technology', q:'Which sorting algorithm is stable?', o:['Merge sort','Quicksort','Selection sort','Heapsort'], a:0 },
+{ c:'Technology', q:'What is the maximum number of IPv4 addresses?', o:['4,294,967,296','2,147,483,648','4,294,967,295','2,147,483,647'], a:2 },
+{ c:'Technology', q:'Which language is used for web page structure?', o:['HTML','CSS','JavaScript','PHP'], a:0 },
+{ c:'Technology', q:'What is the purpose of CSS?', o:['Styling web pages','Structuring content','Client-side logic','Server-side processing'], a:0 },
+{ c:'Technology', q:'Which company developed the C language?', o:['Bell Labs','Microsoft','IBM','DEC'], a:0 },
+{ c:'Technology', q:'What is the time complexity of bubble sort?', o:['O(n²)','O(n log n)','O(n)','O(1)'], a:0 },
+{ c:'Technology', q:'Which protocol is used for file transfer?', o:['FTP','SMTP','HTTP','SNMP'], a:0 },
+{ c:'Technology', q:'What is the maximum depth of a red-black tree?', o:['2 log(n+1)','n','log n','n²'], a:0 },
+{ c:'Technology', q:'Which technology enables virtualization?', o:['Hypervisor','Compiler','Debugger','Assembler'], a:0 },
+{ c:'Technology', q:'What is the purpose of DHCP?', o:['Dynamic IP address assignment','Domain resolution','Data encryption','File sharing'], a:0 },
+{ c:'Technology', q:'Which data structure is used for priority queues?', o:['Heap','Stack','Queue','Array'], a:0 },
+{ c:'Technology', q:'What does IDE stand for?', o:['Integrated Development Environment','Internal Development Engine','Intelligent Design Editor','Interactive Debug Environment'], a:0 },
+{ c:'Technology', q:'Which language is statically typed?', o:['Java','Python','JavaScript','Ruby'], a:0 },
+{ c:'Technology', q:'What is the purpose of a proxy server?', o:['Intermediary for client requests','Data storage','Email delivery','Domain resolution'], a:0 },
+{ c:'Technology', q:'Which algorithm finds shortest paths in graphs?', o:['Dijkstra\'s algorithm','BFS','DFS','Bellman-Ford'], a:0 },
+{ c:'History', q:'What year was the Treaty of Westphalia signed?', o:['1648','1618','1648','1659'], a:0 },
+{ c:'History', q:'Which battle ended the Western Roman Empire?', o:['Battle of Rome 476','Battle of Adrianople','Battle of Actium','Battle of Milvian Bridge'], a:0 },
+{ c:'History', q:'What was the date of the Battle of Hastings?', o:['14 October 1066','25 October 1066','14 September 1066','10 October 1066'], a:0 },
+{ c:'History', q:'Which treaty ended the Thirty Years War?', o:['Peace of Westphalia','Treaty of Versailles','Treaty of Tordesillas','Peace of Augsburg'], a:0 },
+{ c:'History', q:'What year did the Meiji Restoration begin?', o:['1868','1853','1871','1889'], a:0 },
+{ c:'History', q:'Which battle was fought in 1805?', o:['Battle of Trafalgar','Battle of Waterloo','Battle of Austerlitz','Battle of Leipzig'], a:2 },
+{ c:'History', q:'What was the capital of the Byzantine Empire?', o:['Constantinople','Rome','Alexandria','Antioch'], a:0 },
+{ c:'History', q:'Which empire was ruled by Suleiman the Magnificent?', o:['Ottoman Empire','Mughal Empire','Safavid Empire','Holy Roman Empire'], a:0 },
+{ c:'History', q:'What year did the French Revolution begin?', o:['1789','1776','1799','1783'], a:0 },
+{ c:'History', q:'Which battle was fought in 1916?', o:['Battle of the Somme','Battle of the Marne','Battle of Verdun','Both Battle of the Somme and Verdun'], a:3 },
+{ c:'History', q:'What was the Magna Carta signed in?', o:['1215','1066','1297','1164'], a:0 },
+{ c:'History', q:'Which country did Genghis Khan conquer first?', o:['Western Xia','Jin Dynasty','Khwarazmian Empire','Song Dynasty'], a:0 },
+{ c:'History', q:'What year was the Berlin Wall built?', o:['1961','1949','1963','1955'], a:0 },
+{ c:'History', q:'Which war was fought between 1853-1856?', o:['Crimean War','Napoleonic Wars','Seven Years War','Hundred Years War'], a:0 },
+{ c:'History', q:'What was the longest siege in history?', o:['Siege of Candia','Siege of Leningrad','Siege of Troy','Siege of Constantinople'], a:0 },
+{ c:'History', q:'Which treaty ended World War I?', o:['Treaty of Versailles','Treaty of Paris','Treaty of Ghent','Treaty of Vienna'], a:0 },
+{ c:'History', q:'What year did Columbus reach the Americas?', o:['1492','1488','1498','1500'], a:0 },
+{ c:'History', q:'Which battle was Napoleon\'s final defeat?', o:['Battle of Waterloo','Battle of Leipzig','Battle of Austerlitz','Battle of Borodino'], a:0 },
+{ c:'History', q:'What was the Code of Hammurabi written in?', o:['Babylonian','Egyptian','Sumerian','Akkadian'], a:0 },
+{ c:'History', q:'Which dynasty built the Great Wall of China first?', o:['Qin Dynasty','Han Dynasty','Ming Dynasty','Tang Dynasty'], a:0 },
+{ c:'History', q:'What year was the United Nations founded?', o:['1945','1948','1942','1950'], a:0 },
+{ c:'History', q:'Which revolution began in 1917?', o:['Russian Revolution','French Revolution','American Revolution','Chinese Revolution'], a:0 },
+{ c:'History', q:'What was the Battle of Thermopylae fought over?', o:['Greek defense against Persians','Roman expansion','Greek civil war','Persian invasion of Egypt'], a:0 },
+{ c:'History', q:'Which empire was at its height under Ashoka?', o:['Maurya Empire','Gupta Empire','Mughal Empire','Chola Dynasty'], a:0 },
+{ c:'History', q:'What year was the Declaration of Independence signed?', o:['1776','1774','1778','1781'], a:0 },
+{ c:'History', q:'Which battle was the turning point in the Pacific War?', o:['Battle of Midway','Battle of Pearl Harbor','Battle of Coral Sea','Battle of Leyte Gulf'], a:0 },
+{ c:'History', q:'What was the capital of the Inca Empire?', o:['Cuzco','Lima','Machu Picchu','Quito'], a:0 },
+{ c:'History', q:'Which century did the Renaissance begin?', o:['14th century','15th century','16th century','13th century'], a:0 },
+{ c:'History', q:'What year was the first Crusade launched?', o:['1096','1095','1099','1100'], a:0 },
+{ c:'History', q:'Which treaty divided the New World?', o:['Treaty of Tordesillas','Treaty of Madrid','Treaty of Zaragoza','Treaty of Lisbon'], a:0 },
+{ c:'History', q:'What was the longest war in European history?', o:['Hundred Years War','Thirty Years War','Seven Years War','Eighty Years War'], a:0 },
+{ c:'History', q:'Which ancient city was destroyed by Vesuvius?', o:['Pompeii','Herculaneum','Stabiae','Oplontis'], a:0 },
+{ c:'History', q:'What year was the Emancipation Proclamation issued?', o:['1863','1861','1865','1857'], a:0 },
+{ c:'History', q:'Which dynasty unified China first?', o:['Qin Dynasty','Han Dynasty','Zhou Dynasty','Ming Dynasty'], a:0 },
+{ c:'History', q:'What was the main cause of the Peloponnesian War?', o:['Spartan-Athenian rivalry','Persian invasion','Macedonian expansion','Roman conquest'], a:0 },
+{ c:'History', q:'Which empire controlled most of Africa by 1914?', o:['British Empire','French Empire','Belgian Empire','Italian Empire'], a:0 },
+{ c:'History', q:'What year was the Battle of Stalingrad?', o:['1942-1943','1941-1942','1943-1944','1940-1941'], a:0 },
+{ c:'History', q:'Which civilization built Machu Picchu?', o:['Inca','Aztec','Maya','Olmec'], a:0 },
+{ c:'History', q:'What was the significance of the Edict of Milan?', o:['Legalized Christianity','Ended slavery','Granted citizenship','Established the Senate'], a:0 },
+{ c:'History', q:'Which year was the first Pulitzer Prize awarded?', o:['1917','1901','1925','1935'], a:0 },
+{ c:'History', q:'What was the capital of the Ottoman Empire before Istanbul?', o:['Bursa','Edirne','Ankara','Sarajevo'], a:0 },
+{ c:'Literature', q:'What year was "1984" published?', o:['1949','1950','1948','1951'], a:0 },
+{ c:'Literature', q:'Which author wrote "Ulysses"?', o:['James Joyce','Virginia Woolf','T.S. Eliot','Ezra Pound'], a:0 },
+{ c:'Literature', q:'What literary device involves giving human traits to non-human things?', o:['Personification','Simile','Metaphor','Alliteration'], a:0 },
+{ c:'Literature', q:'Which novel begins with "Call me Ishmael"?', o:['Moby-Dick','War and Peace','Don Quixote','The Odyssey'], a:0 },
+{ c:'Literature', q:'What year was "The Great Gatsby" published?', o:['1925','1926','1924','1927'], a:0 },
+{ c:'Literature', q:'Which poet wrote "The Waste Land"?', o:['T.S. Eliot','W.B. Yeats','Ezra Pound','Robert Frost'], a:0 },
+{ c:'Literature', q:'What is the term for a recurring theme or symbol?', o:['Motif','Allegory','Irony','Paradox'], a:0 },
+{ c:'Literature', q:'Which author won the Nobel Prize in 1954?', o:['Ernest Hemingway','William Faulkner','John Steinbeck','Albert Camus'], a:0 },
+{ c:'Literature', q:'What year was "One Hundred Years of Solitude" published?', o:['1967','1968','1966','1969'], a:0 },
+{ c:'Literature', q:'Which play features the character Willy Loman?', o:['Death of a Salesman','A Streetcar Named Desire','The Crucible','All My Sons'], a:0 },
+{ c:'Literature', q:'What literary device involves contradicting ideas?', o:['Oxymoron','Hyperbole','Understatement','Allusion'], a:0 },
+{ c:'Literature', q:'Which novel is set in the dystopian Republic of Gilead?', o:['The Handmaid\'s Tale','Brave New World','Fahrenheit 451','A Clockwork Orange'], a:0 },
+{ c:'Literature', q:'What year was "To Kill a Mockingbird" published?', o:['1960','1961','1959','1962'], a:0 },
+{ c:'Literature', q:'Which author wrote "The Catcher in the Rye"?', o:['J.D. Salinger','Harper Lee','John Updike','Sylvia Plath'], a:0 },
+{ c:'Literature', q:'What is the term for an unreliable narrator?', o:['First-person narrator','Omniscient narrator','Unreliable narrator','Third-person narrator'], a:2 },
+{ c:'Literature', q:'Which epic poem features Odysseus?', o:['The Odyssey','The Iliad','The Aeneid','Beowulf'], a:0 },
+{ c:'Literature', q:'What year was "Lord of the Flies" published?', o:['1954','1955','1953','1956'], a:0 },
+{ c:'Literature', q:'Which author wrote "Brave New World"?', o:['Aldous Huxley','George Orwell','Ray Bradbury','H.G. Wells'], a:0 },
+{ c:'Literature', q:'What literary device involves a brief reference to another work?', o:['Allusion','Allegory','Analogy','Accent'], a:0 },
+{ c:'Literature', q:'Which novel features the character Jay Gatsby?', o:['The Great Gatsby','Tender Is the Night','This Side of Paradise','The Beautiful and Damned'], a:0 },
+{ c:'Literature', q:'What year was "Fahrenheit 451" published?', o:['1953','1954','1952','1955'], a:0 },
+{ c:'Literature', q:'Which poet wrote "Leaves of Grass"?', o:['Walt Whitman','Emily Dickinson','Robert Frost','Langston Hughes'], a:0 },
+{ c:'Literature', q:'What is the term for a character\'s struggle against an external force?', o:['Conflict','Resolution','Exposition','Climax'], a:0 },
+{ c:'Literature', q:'Which play is subtitled "A War Without Winners"?', o:['The Crucible','A Streetcar Named Desire','Death of a Salesman','Who\'s Afraid of Virginia Woolf?'], a:0 },
+{ c:'Literature', q:'What year was "The Hobbit" published?', o:['1937','1938','1936','1939'], a:0 },
+{ c:'Literature', q:'Which author wrote "Crime and Punishment"?', o:['Fyodor Dostoevsky','Leo Tolstoy','Anton Chekhov','Ivan Turgenev'], a:0 },
+{ c:'Literature', q:'What literary device involves exaggeration for emphasis?', o:['Hyperbole','Litotes','Irony','Metaphor'], a:0 },
+{ c:'Literature', q:'Which novel begins with "It was the best of times"?', o:['A Tale of Two Cities','Great Expectations','Oliver Twist','David Copperfield'], a:0 },
+{ c:'Literature', q:'What year was "On the Road" published?', o:['1957','1958','1956','1959'], a:0 },
+{ c:'Literature', q:'Which author wrote "The Bell Jar"?', o:['Sylvia Plath','Anne Sexton','Maya Angelou','Dorothy Parker'], a:0 },
+{ c:'Literature', q:'What is the term for a non-linear narrative structure?', o:['Stream of consciousness','First-person','Third-person','Epistolary'], a:0 },
+{ c:'Literature', q:'Which poet wrote "The Road Not Taken"?', o:['Robert Frost','W.B. Yeats','T.S. Eliot','Wallace Stevens'], a:0 },
+{ c:'Literature', q:'What year was "Invisible Man" published?', o:['1952','1953','1951','1954'], a:0 },
+{ c:'Literature', q:'Which novel features the character Atticus Finch?', o:['To Kill a Mockingbird','Go Set a Watchman','The Great Gatsby','In Cold Blood'], a:0 },
+{ c:'Literature', q:'What literary device involves giving human qualities to abstractions?', o:['Personification','Apostrophe','Metonymy','Synecdoche'], a:0 },
+{ c:'Literature', q:'Which author wrote "The Grapes of Wrath"?', o:['John Steinbeck','William Faulkner','Ernest Hemingway','F. Scott Fitzgerald'], a:0 },
+{ c:'Literature', q:'What year was "Animal Farm" published?', o:['1945','1946','1944','1947'], a:0 },
+{ c:'Literature', q:'Which play is based on the story of Agamemnon?', o:['The Oresteia','Oedipus Rex','Antigone','Medea'], a:0 },
+{ c:'Literature', q:'What is the term for the time and place of a story?', o:['Setting','Plot','Characters','Theme'], a:0 },
+{ c:'Literature', q:'Which novel features the character Captain Ahab?', o:['Moby-Dick','The Old Man and the Sea','Billy Budd','Typee'], a:0 },
+{ c:'Literature', q:'What year was "Slaughterhouse-Five" published?', o:['1969','1970','1968','1971'], a:0 },
+{ c:'Literature', q:'Which author wrote "The Sound and the Fury"?', o:['William Faulkner','F. Scott Fitzgerald','John Steinbeck','Ernest Hemingway'], a:0 },
+{ c:'Literature', q:'What literary device involves two parallel clauses?', o:['Antithesis','Juxtaposition','Parallelism','Anaphora'], a:0 },
+{ c:'Literature', q:'Which epic poem features Beowulf?', o:['Beowulf','Sir Gawain and the Green Knight','Piers Plowman','The Canterbury Tales'], a:0 },
+{ c:'Literature', q:'What year was "Catch-22" published?', o:['1961','1962','1960','1963'], a:0 },
+{ c:'Music', q:'What is the key of Beethoven\'s 5th Symphony?', o:['C minor','D minor','E minor','F minor'], a:0 },
+{ c:'Music', q:'Which composer wrote "The Art of Fugue"?', o:['J.S. Bach','Handel','Vivaldi','Mozart'], a:0 },
+{ c:'Music', q:'What is a tritone interval?', o:['Augmented fourth','Perfect fifth','Major third','Minor sixth'], a:0 },
+{ c:'Music', q:'Which instrument has 88 keys?', o:['Piano','Organ','Harpsichord','Accordion'], a:0 },
+{ c:'Music', q:'What is the term for the speed of music?', o:['Tempo','Dynamics','Pitch','Timbre'], a:0 },
+{ c:'Music', q:'Which composer wrote "The Four Seasons"?', o:['Vivaldi','Bach','Handel','Mozart'], a:0 },
+{ c:'Music', q:'What is the term for a gradual increase in loudness?', o:['Crescendo','Diminuendo','Forte','Piano'], a:0 },
+{ c:'Music', q:'Which key has five sharps?', o:['B major','A major','E major','D major'], a:0 },
+{ c:'Music', q:'What is a cadence in music?', o:['Harmonic resolution','Melodic line','Rhythmic pattern','Dynamic change'], a:0 },
+{ c:'Music', q:'Which composer was deaf when he wrote his 9th Symphony?', o:['Beethoven','Mozart','Haydn','Brahms'], a:0 },
+{ c:'Music', q:'What is the term for the lowest note in a chord?', o:['Bass','Root','Fundamental','Tonic'], a:0 },
+{ c:'Music', q:'Which clef is used for the bass?', o:['F clef','G clef','C clef','D clef'], a:0 },
+{ c:'Music', q:'What is a staccato mark?', o:['Dot above/below note','Slur','Accent','Fermata'], a:0 },
+{ c:'Music', q:'Which composer wrote "The Nutcracker"?', o:['Tchaikovsky','Rimsky-Korsakov','Mussorgsky','Prokofiev'], a:0 },
+{ c:'Music', q:'What is the term for multiple melodies at once?', o:['Polyphony','Monophony','Homophony','Heterophony'], a:0 },
+{ c:'Music', q:'Which key has three flats?', o:['E♭ major','A♭ major','B♭ major','D♭ major'], a:0 },
+{ c:'Music', q:'What is a fermata?', o:['Hold note longer','Shorten note','Repeat note','Skip note'], a:0 },
+{ c:'Music', q:'Which composer wrote "Symphony No. 9"?', o:['Beethoven','Mahler','Bruckner','Shostakovich'], a:0 },
+{ c:'Music', q:'What is the term for the distance between notes?', o:['Interval','Scale','Chord','Melody'], a:0 },
+{ c:'Music', q:'Which instrument belongs to the brass family?', o:['Trumpet','Clarinet','Oboe','Flute'], a:0 },
+{ c:'Music', q:'What is a diminished seventh interval?', o:['9 semitones','10 semitones','11 semitones','8 semitones'], a:0 },
+{ c:'Music', q:'Which composer wrote "The Rite of Spring"?', o:['Igor Stravinsky','Sergei Rachmaninoff','Dmitri Shostakovich','Igor Stravinsky'], a:0 },
+{ c:'Music', q:'What is the term for the repeated section in a rondo?', o:['Refrain','Verse','Bridge','Chorus'], a:0 },
+{ c:'Music', q:'Which key is the relative minor of C major?', o:['A minor','E minor','D minor','G minor'], a:0 },
+{ c:'Music', q:'What is a glissando?', o:['Slide between notes','Jump between notes','Repeat notes','Hold notes'], a:0 },
+{ c:'Music', q:'Which composer wrote "Peer Gynt"?', o:['Edvard Grieg','Johan Svendsen','Jean Sibelius','Carl Nielsen'], a:0 },
+{ c:'Music', q:'What is the term for a repeated pattern in music?', o:['Ostinato','Motif','Theme','Leitmotif'], a:0 },
+{ c:'Music', q:'Which clef is used for the treble?', o:['G clef','F clef','C clef','D clef'], a:0 },
+{ c:'Music', q:'What is a sustained tone in music called?', o:['Drone','Pedal','Bass note','Tonic'], a:0 },
+{ c:'Music', q:'Which composer wrote "Boléro"?', o:['Maurice Ravel','Claude Debussy','Erik Satie','Gabriel Fauré'], a:0 },
+{ c:'Music', q:'What is the term for an ornament involving rapid alternation?', o:['Trill','Mordent','Turn','Appoggiatura'], a:0 },
+{ c:'Music', q:'Which key has one flat?', o:['F major','B♭ major','E♭ major','C major'], a:0 },
+{ c:'Music', q:'What is a sonata form?', o:['Exposition-Development-Recapitulation','Verse-Chorus-Verse','ABA','Theme and Variations'], a:0 },
+{ c:'Music', q:'Which composer wrote "The Planets"?', o:['Gustav Holst','Ralph Vaughan Williams','Edward Elgar','Benjamin Britten'], a:0 },
+{ c:'Music', q:'What is the term for soft playing?', o:['Piano','Forte','Mezzo','Sforzando'], a:0 },
+{ c:'Music', q:'Which instrument is a percussion instrument?', o:['Timpani','Cello','Viola','Double bass'], a:0 },
+{ c:'Music', q:'What is a compound time signature?', o:['6/8','4/4','3/4','2/4'], a:0 },
+{ c:'Music', q:'Which composer wrote "A Midsummer Night\'s Dream" overture?', o:['Felix Mendelssohn','Robert Schumann','Franz Liszt','Carl Maria von Weber'], a:0 },
+{ c:'Music', q:'What is the term for a passage connecting two themes?', o:['Transition','Bridge','Coda','Development'], a:0 },
+{ c:'Music', q:'Which key has two sharps?', o:['D major','A major','E major','B major'], a:0 },
+{ c:'Music', q:'What is a pizzicato?', o:['Plucking strings','Bowing strings','Striking strings','Muting strings'], a:0 },
+{ c:'Music', q:'Which composer wrote "Hungarian Dances"?', o:['Johannes Brahms','Franz Schubert','Antonín Dvořák','Robert Schumann'], a:0 },
+{ c:'Music', q:'What is the term for the main theme in a fugue?', o:['Subject','Answer','Countersubject','Episode'], a:0 },
+{ c:'Music', q:'Which clef is used for alto and tenor?', o:['C clef','G clef','F clef','D clef'], a:0 },
+{ c:'Music', q:'What is a rubato?', o:['Flexible tempo','Fixed tempo','Accelerando','Ritardando'], a:0 },
+{ c:'Music', q:'Which composer wrote "Eine kleine Nachtmusik"?', o:['Wolfgang Amadeus Mozart','Joseph Haydn','Ludwig van Beethoven','Franz Schubert'], a:0 },
+{ c:'Music', q:'What is the term for a short melodic idea?', o:['Motif','Theme','Phrase','Period'], a:0 },
+{ c:'Sports', q:'What is the highest break recorded in snooker?', o:['147','148','149','150'], a:0 },
+{ c:'Sports', q:'Which tennis surface is the fastest?', o:['Grass','Clay','Hard','Carpet'], a:0 },
+{ c:'Sports', q:'What is the length of an Olympic swimming pool?', o:['50 meters','25 meters','100 meters','75 meters'], a:0 },
+{ c:'Sports', q:'Which country won the most FIFA World Cups?', o:['Brazil','Germany','Italy','Argentina'], a:0 },
+{ c:'Sports', q:'What is the diameter of a basketball hoop?', o:['18 inches','20 inches','22 inches','24 inches'], a:0 },
+{ c:'Sports', q:'Which golfer has the most major championships?', o:['Jack Nicklaus','Tiger Woods','Arnold Palmer','Ben Hogan'], a:0 },
+{ c:'Sports', q:'What is the term for a perfect game in bowling?', o:['300 game','Turkey','Hambone','Strikes'], a:0 },
+{ c:'Sports', q:'How many players are on a cricket team?', o:['11','10','12','9'], a:0 },
+{ c:'Sports', q:'What is the weight of a shot put in men\'s competition?', o:['7.26 kg','5 kg','6 kg','8 kg'], a:0 },
+{ c:'Sports', q:'Which country invented table tennis?', o:['England','China','Japan','Germany'], a:0 },
+{ c:'Sports', q:'What is the term for a serve that cannot be returned?', o:['Ace','Fault','Let','Service'], a:0 },
+{ c:'Sports', q:'How long is an Olympic marathon?', o:['42.195 km','42 km','40 km','45 km'], a:0 },
+{ c:'Sports', q:'Which team has won the most NBA championships?', o:['Boston Celtics','Los Angeles Lakers','Chicago Bulls','Golden State Warriors'], a:0 },
+{ c:'Sports', q:'What is the standard weight of a rugby ball?', o:['410-460 grams','380-420 grams','450-500 grams','350-400 grams'], a:0 },
+{ c:'Sports', q:'What is the diameter of a golf hole?', o:['4.25 inches','4 inches','4.5 inches','5 inches'], a:0 },
+{ c:'Sports', q:'Which sport uses the term "love" for zero?', o:['Tennis','Cricket','Badminton','Table Tennis'], a:0 },
+{ c:'Sports', q:'How many points is a touchdown in American football?', o:['6','3','7','4'], a:0 },
+{ c:'Sports', q:'What is the regulation height of a volleyball net (men)?', o:['2.43 meters','2.24 meters','2.35 meters','2.50 meters'], a:0 },
+{ c:'Sports', q:'Which country has won the most Olympic gold medals?', o:['USA','China','Russia','Germany'], a:0 },
+{ c:'Sports', q:'What is the term for hitting the ball twice in table tennis?', o:['Double hit','Fault','Let','Stroke'], a:0 },
+{ c:'Sports', q:'How many holes are played in a standard round of golf?', o:['18','9','36','27'], a:0 },
+{ c:'Sports', q:'Which boxer held the heavyweight title the longest?', o:['Joe Louis','Muhammad Ali','Lennox Lewis','Larry Holmes'], a:0 },
+{ c:'Sports', q:'What is the maximum break in snooker without fouls?', o:['147','155','167','186'], a:0 },
+{ c:'Sports', q:'How many players are on a baseball team?', o:['9','10','11','8'], a:0 },
+{ c:'Sports', q:'What is the standard length of an Olympic pool lane?', o:['50 meters','25 meters','100 meters','33 meters'], a:0 },
+{ c:'Sports', q:'Which sport has the term "deuce" for a tie?', o:['Tennis','Volleyball','Badminton','Table Tennis'], a:0 },
+{ c:'Sports', q:'How many sets are needed to win a men\'s Grand Slam tennis match?', o:['3','5','4','2'], a:1 },
+{ c:'Sports', q:'What is the regulation size of a soccer ball?', o:['Size 5','Size 4','Size 3','Size 6'], a:0 },
+{ c:'Sports', q:'Which country hosted the first FIFA World Cup?', o:['Uruguay','Brazil','Italy','France'], a:0 },
+{ c:'Sports', q:'What is the term for a score of one under par in golf?', o:['Birdie','Eagle','Bogey','Albatross'], a:0 },
+{ c:'Sports', q:'How many rings are on the Olympic flag?', o:['5','6','7','8'], a:0 },
+{ c:'Sports', q:'What is the weight of a javelin in men\'s competition?', o:['800 grams','700 grams','900 grams','600 grams'], a:0 },
+{ c:'Sports', q:'Which sport uses the term "love" for zero?', o:['Tennis','Cricket','Badminton','Table Tennis'], a:0 },
+{ c:'Sports', q:'How many points is a goal in ice hockey?', o:['1','2','3','4'], a:0 },
+{ c:'Sports', q:'What is the standard height of a basketball hoop?', o:['10 feet','9 feet','11 feet','12 feet'], a:0 },
+{ c:'Sports', q:'Which team has won the most World Series?', o:['New York Yankees','St. Louis Cardinals','Oakland Athletics','Boston Red Sox'], a:0 },
+{ c:'Sports', q:'What is the term for a perfect score in gymnastics?', o:['10.0','11.0','100','12.0'], a:0 },
+{ c:'Sports', q:'How many players are on a rugby union team?', o:['15','14','16','13'], a:0 },
+{ c:'Sports', q:'What is the diameter of a basketball?', o:['9.5 inches','9 inches','10 inches','10.5 inches'], a:0 },
+{ c:'Sports', q:'Which swimmer has the most Olympic gold medals?', o:['Michael Phelps','Mark Spitz','Carl Lewis','Usain Bolt'], a:0 },
+{ c:'Sports', q:'What is the standard length of a cricket pitch?', o:['22 yards','20 yards','24 yards','25 yards'], a:0 },
+{ c:'Sports', q:'How many innings are in a standard baseball game?', o:['9','7','10','8'], a:0 },
+{ c:'Sports', q:'What is the term for three strikes in bowling?', o:['Turkey','Strike','Hambone','Perfect game'], a:0 },
+{ c:'Sports', q:'Which country invented fencing?', o:['Italy','France','England','Germany'], a:0 },
+{ c:'Sports', q:'What is the weight of a boxing glove (heavyweight)?', o:['8-10 oz','10-12 oz','6-8 oz','12-14 oz'], a:0 },
+{ c:'Sports', q:'How many events are in a decathlon?', o:['10','8','12','9'], a:0 },
+{ c:'Sports', q:'What is the standard width of a swimming lane?', o:['2.5 meters','2 meters','3 meters','2.25 meters'], a:0 },
+{ c:'Anatomy', q:'Which nerve innervates the lateral epicondyle?', o:['Radial nerve','Ulnar nerve','Median nerve','Musculocutaneous nerve'], a:0 },
+{ c:'Anatomy', q:'What clinical sign is positive in meningitis?', o:['Kernig\'s sign','Babinski sign','Romberg sign','Lhermitte sign'], a:0 },
+{ c:'Anatomy', q:'Which surgical approach is used for hip replacement?', o:['Posterior approach','Anterior approach','Lateral approach','Anterolateral approach'], a:0 },
+{ c:'Anatomy', q:'What is the nerve supply to the trapezius muscle?', o:['Spinal accessory nerve','Dorsal scapular nerve','Long thoracic nerve','Thoracodorsal nerve'], a:0 },
+{ c:'Anatomy', q:'Which artery supplies the lateral femoral condyle?', o:['Lateral circumflex femoral artery','Medial circumflex femoral artery','Deep femoral artery','Superior gluteal artery'], a:0 },
+{ c:'Anatomy', q:'What clinical sign indicates carpal tunnel syndrome?', o:['Tinel\'s sign','Phalen\'s test','Froment\'s sign','Tinel sign and Phalen\'s test'], a:3 },
+{ c:'Anatomy', q:'Which muscle is paralyzed in Erb\'s palsy?', o:['Deltoid','Infraspinatus','Supraspinatus','Both deltoid and infraspinatus'], a:3 },
+{ c:'Anatomy', q:'What is the arterial supply to the humeral head?', o:['Anterior and posterior circumflex humeral arteries','Subscapular artery','Thoracoacromial artery','Dorsal scapular artery'], a:0 },
+{ c:'Anatomy', q:'Which nerve is damaged in a posterior dislocation of the shoulder?', o:['Axillary nerve','Musculocutaneous nerve','Radial nerve','Ulnar nerve'], a:0 },
+{ c:'Anatomy', q:'What is the anatomical snuffbox formed by?', o:['Extensor pollicis brevis and abductor pollicis longus','Extensor pollicis longus and extensor pollicis brevis','Abductor pollicis longus and flexor pollicis longus','Extensor indicis and extensor pollicis longus'], a:0 },
+{ c:'Anatomy', q:'Which nerve is most commonly injured in distal radius fractures?', o:['Median nerve','Ulnar nerve','Radial nerve','Anterior interosseous nerve'], a:0 },
+{ c:'Anatomy', q:'What is the blood supply to the scaphoid bone?', o:['Dorsal carpal branch of radial artery','Ulnar artery','Anterior interosseous artery','Posterior interosseous artery'], a:0 },
+{ c:'Anatomy', q:'Which muscle is responsible for medial rotation of the hip?', o:['Gluteus medius','Gluteus maximus','Psoas major','Iliacus'], a:0 },
+{ c:'Anatomy', q:'What clinical sign is positive in anterior cruciate ligament tears?', o:['Anterior drawer test','Lachman test','Both anterior drawer and Lachman','McMurray test'], a:2 },
+{ c:'Anatomy', q:'Which nerve innervates the thenar muscles?', o:['Recurrent branch of median nerve','Ulnar nerve','Radial nerve','Anterior interosseous nerve'], a:0 },
+{ c:'Anatomy', q:'What is the arterial supply to the head of the femur in adults?', o:['Medial circumflex femoral artery','Lateral circumflex femoral artery','Obturator artery','Superior gluteal artery'], a:0 },
+{ c:'Anatomy', q:'Which surgical approach is used for appendectomy?', o:['McBurney\'s incision','Kocher\'s incision','Lanz incision','Paramedian incision'], a:0 },
+{ c:'Anatomy', q:'What is the function of the Pott\'s fracture?', o:['Fracture of the lateral malleolus','Fracture of the medial malleolus','Fracture of the calcaneus','Fracture of the navicular'], a:0 },
+{ c:'Anatomy', q:'Which nerve is damaged in a spiral fracture of the humerus?', o:['Radial nerve','Median nerve','Ulnar nerve','Axillary nerve'], a:0 },
+{ c:'Anatomy', q:'What is the blood supply to the gallbladder?', o:['Cystic artery','Right hepatic artery','Common hepatic artery','Gastroduodenal artery'], a:0 },
+{ c:'Anatomy', q:'Which muscle is weakened in winged scapula?', o:['Serratus anterior','Trapezius','Rhomboids','Levator scapulae'], a:0 },
+{ c:'Anatomy', q:'What is the nerve supply to the diaphragm?', o:['Phrenic nerve','Intercostal nerves','Subcostal nerve','Thoracodorsal nerve'], a:0 },
+{ c:'Anatomy', q:'Which surgical approach is used for cholecystectomy?', o:['Laparoscopic approach','Open subcostal approach','Midline approach','Right posterior approach'], a:0 },
+{ c:'Anatomy', q:'What is the arterial supply to the rectum?', o:['Superior, middle, and inferior rectal arteries','Internal iliac artery','Common iliac artery','External iliac artery'], a:0 },
+{ c:'Anatomy', q:'Which nerve is most commonly injured in elbow dislocation?', o:['Ulnar nerve','Median nerve','Radial nerve','Anterior interosseous nerve'], a:0 },
+{ c:'Anatomy', q:'What is the clinical sign of a tension pneumothorax?', o:['Tracheal deviation','Hypotension','JVD','All of the above'], a:3 },
+{ c:'Anatomy', q:'Which artery is most commonly affected in a stroke?', o:['Middle cerebral artery','Anterior cerebral artery','Posterior cerebral artery','Basilar artery'], a:0 },
+{ c:'Anatomy', q:'What is the blood supply to the stomach?', o:['Left gastric, right gastric, short gastric, and gastroepiploic arteries','Superior mesenteric artery','Inferior mesenteric artery','Celiac trunk'], a:0 },
+{ c:'Anatomy', q:'Which nerve is damaged in a boxer\'s fracture?', o:['Ulnar nerve','Median nerve','Radial nerve','Deep peroneal nerve'], a:0 },
+{ c:'Anatomy', q:'What is the surgical approach for a hip hemiarthroplasty?', o:['Posterior approach','Anterior approach','Lateral approach','Direct lateral approach'], a:0 },
+{ c:'Anatomy', q:'Which muscle is innervated by the suprascapular nerve?', o:['Supraspinatus and infraspinatus','Deltoid','Teres major','Subscapularis'], a:0 },
+{ c:'Anatomy', q:'What is the arterial supply to the brainstem?', o:['Vertebral and basilar arteries','Internal carotid arteries','External carotid arteries','Ophthalmic arteries'], a:0 },
+{ c:'Anatomy', q:'Which nerve is most commonly injured in a hangman\'s fracture?', o:['C2 nerve root','C3 nerve root','C4 nerve root','C5 nerve root'], a:0 },
+{ c:'Anatomy', q:'What is the blood supply to the thyroid gland?', o:['Superior and inferior thyroid arteries','Internal carotid artery','External carotid artery','Subclavian artery'], a:0 },
+{ c:'Anatomy', q:'Which surgical approach is used for a craniotomy?', o:['Pterional approach','Midline approach','Suboccipital approach','All of the above'], a:3 },
+{ c:'Anatomy', q:'What is the nerve supply to the sternocleidomastoid?', o:['Spinal accessory nerve and C2/C3','Cranial nerve VII','Cranial nerve V','Cranial nerve IX'], a:0 },
+{ c:'Anatomy', q:'Which artery supplies the appendix?', o:['Appendicular artery','Ileocolic artery','Middle colic artery','Right colic artery'], a:0 },
+{ c:'Anatomy', q:'What is the clinical sign of a femoral neck fracture?', o:['Shortened and externally rotated limb','Shortened and internally rotated limb','Elongated limb','No deformity'], a:0 },
+{ c:'Anatomy', q:'Which nerve is damaged in a colles\' fracture?', o:['Median nerve','Ulnar nerve','Radial nerve','Anterior interosseous nerve'], a:0 },
+{ c:'Anatomy', q:'What is the blood supply to the fallopian tubes?', o:['Tubal branch of uterine artery','Ovarian artery','Internal iliac artery','Inferior epigastric artery'], a:0 },
+{ c:'Anatomy', q:'Which muscle is responsible for abduction of the arm?', o:['Supraspinatus','Deltoid','Both supraspinatus and deltoid','Infraspinatus'], a:2 }
+,
+{ c:'Arabic History', q:'Which Abbasid caliph moved the capital to Samarra in 836 CE?', o:['Al-Ma\'mun','Al-Mu\'tasim','Al-Wathiq','Al-Mutawakkil'], a:1 },
+{ c:'Arabic History', q:'What was the name of the Mamluk Sultanate founded in Egypt in 1250?', o:['Bahri Mamluks','Ayyubids','Burji Mamluks','Fatimids'], a:0 },
+{ c:'Arabic History', q:'Which Nabataean king expanded Petra\'s theater to seat 8,500?', o:['Aretas IV','Malichus II','Obodas III','Aretas III'], a:1 },
+{ c:'Arabic History', q:'The Treaty of Hudaybiyyah was signed in which year CE?', o:['624','626','628','630'], a:2 },
+{ c:'Arabic History', q:'Who was the last Fatimid caliph in Egypt?', o:['Al-Amir','Al-Hafiz','Al-Adid','Al-Zahir'], a:2 },
+{ c:'Arabic History', q:'Which Andalusian battle in 711 CE involved Tariq ibn Ziyad?', o:['Battle of Guadalete','Battle of Tours','Battle of Talas','Battle of Yarmouk'], a:0 },
+{ c:'Arabic History', q:'What was the primary pre-Islamic Arabian trade route called?', o:['Incense Route','Silk Road','Royal Road','Amber Road'], a:0 },
+{ c:'Arabic History', q:'Which Abbasid caliph authored the Treatise on the Instruments of Observation?', o:['Al-Ma\'mun','Al-Mansur','Al-Mahdi','Al-Hadi'], a:0 },
+{ c:'Arabic History', q:'The Aghlabid conquest of Sicily began from which port?', o:['Tunis','Mahdia','Kayrawan','Sousse'], a:1 },
+{ c:'Arabic History', q:'Which Crusader-Kurdish treaty ended the third phase of Crusades in Syria?', o:['Treaty of Jaffa','Treaty of Ramla','Treaty of Lattakia','Treaty of Acre'], a:1 },
+{ c:'Arabic History', q:'Who built the Great Mosque of Kairouan in 670 CE?', o:['Uqba ibn Nafi','Muhammad ibn Qasim','Harun al-Rashid','Abd al-Rahman I'], a:0 },
+{ c:'Arabic History', q:'Which Umayyad caliph initiated construction of the Dome of the Rock?', o:['Abd al-Malik','Al-Walid I','Sulayman','Yazid II'], a:0 },
+{ c:'Arabic History', q:'What was the name of the Mamluk administrative registry system?', o:['Diwan al-Jaysh','Diwan al-Kharaj','Iqta system','Waqf system'], a:0 },
+{ c:'Arabic History', q:'Which Abbasid vizier was known as the "Father of the Turks"?', o:['Al-Fadl ibn al-Rabi','Al-Husayn ibn Mansur','Wasif al-Turki','Al-Muwaffaq'], a:2 },
+{ c:'Arabic History', q:'The Safavid conversion of Iran to Shia Islam occurred under which Shah?', o:['Shah Ismail I','Shah Abbas I','Shah Tahmasp','Shah Quli'], a:0 },
+{ c:'Arabic History', q:'Which battle in 1260 stopped the Mongol advance into the Levant?', o:['Battle of Ain Jalut','Battle of Baghdad','Battle of Homs','Battle of Kalka'], a:0 },
+{ c:'Arabic History', q:'What was the capital of the Rustamid Ibadi imamate in North Africa?', o:['Tahert','Fez','Sijilmasa','Tlemcen'], a:0 },
+{ c:'Arabic History', q:'Who authored the Muqaddimah, a foundational historiographical work?', o:['Al-Tabari','Ibn Khaldun','Ibn Battuta','Al-Masudi'], a:1 },
+{ c:'Arabic History', q:'Which Yemeni dynasty controlled the Red Sea trade in the 9th century?', o:['Rassids','Najahids','Yufirids','Ziyadids'], a:3 },
+{ c:'Arabic History', q:'The Hafsid dynasty seceded from which larger caliphate?', o:['Almohads','Almoravids','Ayyubids','Fatimids'], a:0 },
+{ c:'Arabic History', q:'Which Abbasid caliph was strangled by his Turkish guards in 861?', o:['Al-Mutawakkil','Al-Muntasir','Al-Mustain','Al-Mu\'tazz'], a:0 },
+{ c:'Arabic History', q:'What was the name of the Azdite tribal kingdom in early Islamic Oman?', o:['Mazun','Dibba','Muscat','Sohar'], a:0 },
+{ c:'Arabic History', q:'Which Almoravid ruler conquered Ghana around 1076 CE?', o:['Yusuf ibn Tashfin','Abu Bakr ibn Umar','Ali ibn Yusuf','Tashfin ibn Ali'], a:1 },
+{ c:'Arabic History', q:'The Qaramita were a branch of which Shi\'a movement?', o:['Zaydis','Ismailis','Twelvers','Alawites'], a:1 },
+{ c:'Arabic History', q:'Which Battle of Chains preceded the Muslim conquest of Iraq?', o:['Battle of Walaja','Battle of Bridge','Battle of Siffin','Battle of Nahawand'], a:0 },
+{ c:'Arabic History', q:'Who was the first Abbasid caliph to face major Zanj rebellion?', o:['Al-Mansur','Al-Mahdi','Al-Hadi','Al-Mu\'tadid'], a:1 },
+{ c:'Arabic History', q:'What was the chief judicial office in Mamluk Egypt called?', o:['Qadi al-Quzzat','Muhtasib','Naqib al-Ashraf','Wakil al-Dar'], a:0 },
+{ c:'Arabic History', q:'The Zirid dynasty broke from the Fatimids in which modern country?', o:['Morocco','Tunisia','Libya','Algeria'], a:1 },
+{ c:'Arabic History', q:'Which Samanid ruler sponsored the translation of Indian texts?', o:['Nuh II','Isma\'il I','Ahmad II','Saman-khudat'], a:0 },
+{ c:'Arabic History', q:'What year did Umayyad Spain officially fall to the Almohads?', o:['1090','1147','1212','1230'], a:1 },
+{ c:'Arabic History', q:'Which Fatimid commander conquered Egypt from the Ikhshidids?', o:['Jawhar al-Siqilli','Badr al-Jamali','Al-Qadir','Kutuz'], a:0 },
+{ c:'Arabic History', q:'What was the Seljuk administrative system for land grants called?', o:['Muqata\'a','Iqta\'a','Timar','Diyamet'], a:1 },
+{ c:'Arabic History', q:'Which Abbasid caliph established the annual pilgrimage convoy protocol?', o:['Harun al-Rashid','Al-Mahdi','Al-Mansur','Al-Muktafi'], a:0 },
+{ c:'Arabic History', q:'The Hamdanid dynasty ruled which region from the 9th to 11th centuries?', o:['Moorish Spain','Upper Mesopotamia','Persia','Yemen'], a:1 },
+{ c:'Arabic History', q:'Who wrote the celebrated Arabic manual on war strategy "Sirat al-Muluk"?', o:['Turtushi','Ibn Zaydun','Al-Muwaffaq','Al-Qalqashandi'], a:2 },
+{ c:'Arabic History', q:'Which Battle of Marj Rahit in 684 secured Umayyad control of Syria?', o:['Qays vs. Kalb','Qays vs. Kilab','Yaman vs. Qays','Tamim vs. Azd'], a:2 },
+{ c:'Arabic History', q:'What was the name of the Ibadi imamate\'s religious council in Oman?', o:['Majlis al-Shura','Diwan al-Insha','Bayt al-Mal','Majlis al-Umma'], a:0 },
+{ c:'Arabic History', q:'Which Marinid ruler began construction of the madrasa in Fez (1351)?', o:['Abu Inan Faris','Abu al-Hasan','Abu Sa\'id','Yusuf I'], a:0 },
+{ c:'Arabic History', q:'Who led the Andalusian revolt against the Umayyads in 740 CE?', o:['Yusuf ibn Abd al-Rahman','Munuza','Musa ibn Musa','Alfonso I'], a:0 },
+{ c:'Arabic History', q:'Which Abbasid civil war was known as the "Four-Year Anarchy"?', o:['861â€“865','809â€“813','750â€“755','869â€“873'], a:0 },
+{ c:'Arabic History', q:'What was the Mamluk Ilkhanid diplomatic relationship format called?', o:['Farman','Sultaniyah','Mu\'ahada','Ata\'a'], a:2 },
+{ c:'Arabic History', q:'The Saffavid dynasty originated from which Sufi order?', o:['Mevlevi','Safaviyya','Naqshbandi','Qadiriyya'], a:1 },
+{ c:'Arabic History', q:'Who was the Umayyad governor who conquered Transoxiana in 706?', o:['Qutayba ibn Muslim','Al-Hajjaj ibn Yusuf','Musab ibn al-Zubayr','Hussain ibn Numayr'], a:0 },
+{ c:'Arabic History', q:'Which Fatimid navy contested Byzantine control of Sicily in 909?', o:['First fleet','Persian fleet','Cretan fleet','Tarabulus fleet'], a:3 },
+{ c:'Arabic History', q:'What was the name of the Abbasid spy network under Al-Mu\'tadid?', o:['Barid','Awsaf','Dastur','Dawadar'], a:0 },
+{ c:'Arabic History', q:'Which Hanbali scholar was executed by the Abbasids in 833 for theological dissent?', o:['Ahmad ibn Hanbal','Al-Hallaj','Al-Muwaffaq','Bishr al-Marisi'], a:1 },
+{ c:'Arabic History', q:'What year was the Alhambra Palace first built as a fortress?', o:['889','1238','1333','1002'], a:0 },
+{ c:'Arabic History', q:'Which pre-Islamic Arabic tribe produced the Prophet\'s grandfather Abd al-Muttalib?', o:['Quraysh','Tamim','Qays','Azd'], a:0 },
+{ c:'Arabic History', q:'The Buyid dynasty seized Baghdad from the Abbasids in which year?', o:['935','945','969','975'], a:1 },
+{ c:'Arabic History', q:'Who authored the controversial "Risalat al-Tawh" for Al-Hakim bi-Amr Allah?', o:['Da\'ud al-Muqammis','Zahiriyya','Ibn al-Rawandi','Sinan ibn Thabit'], a:2 },
+{ c:'Islamic Civilization', q:'Which hadith collector is known as "the most reliable narrator" by Imam Muslim?', o:['Al-Bukhari','Ibn Majah','Abu Dawud','Al-Tirmidhi'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for a honeycomb-like vaulting in Islamic architecture?', o:['Muqarnas','Iwan','Minaret','Mihrab'], a:0 },
+{ c:'Islamic Civilization', q:'Which zij astronomical tables were compiled by Al-Battani?', o:['Zij al-Sindhind','Zij al-Sab\'i','Zij al-Mu\'adhdhab','Zij al-Hakimi'], a:1 },
+{ c:'Islamic Civilization', q:'What is the principle of Dar al-Murshid in Islamic jurisprudence?', o:['Authority of guidance','Source of legislation','Authority of judgment','Source of consensus'], a:0 },
+{ c:'Islamic Civilization', q:'Which Sufi order claims descent from the Prophet through his grandson Husayn?', o:['Naqshbandi','Qadiriyya','Mevlevi','Tijaniyya'], a:1 },
+{ c:'Islamic Civilization', q:'What is the term for a glazed ceramic tile pattern in Islamic art?', o:['Zellige','Opus sectile','Intarsia','Tessera'], a:0 },
+{ c:'Islamic Civilization', q:'Which hadith scholar compiled the "Sunan" collection known for legal narrations?', o:['Abu Dawud','Ibn Majah','Al-Nasa\'i','Al-Darimi'], a:0 },
+{ c:'Islamic Civilization', q:'What is the name of the central dome in a classical Ottoman mosque?', o:['Qubba','Iwan','Qibla','Maqsura'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic mathematician first described the concept of a cryptographic hash?', o:['Al-Khalil','Al-Kindi','Al-Khwarizmi','Thabit ibn Qurra'], a:1 },
+{ c:'Islamic Civilization', q:'What is the legal term for the right of pre-emption in Islamic property law?', o:['Shuf\'a','Waqf','Iqta\'a','Istibdal'], a:0 },
+{ c:'Islamic Civilization', q:'Which calligraphic script is used primarily for Quranic headings?', o:['Thuluth','Naskh','Diwani','Muhaqqaq'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for a hadith chain with an unnamed narrator?', o:['Mursal','Mu\'dal','Munqati\'','Mu\'allaq'], a:0 },
+{ c:'Islamic Civilization', q:'Which mosque in Fez has the world\'s oldest continuously operating university?', o:['Al-Qarawiyyin','Al-Zitouna','Al-Azhar','Al-Qayrawan'], a:0 },
+{ c:'Islamic Civilization', q:'What geometric pattern consists of interlaced stars in Islamic art?', o:['Arabesque','Girih','Zellige','Muqarnas'], a:1 },
+{ c:'Islamic Civilization', q:'Which Seljuk vizier established the Nizamiyya madrasa network?', o:['Nizam al-Mulk','Al-Ghazali','Ibn Sina','Al-Biruni'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for an Islamic legal ruling issued by a mufti?', o:['Fatwa','Ijma','Qiyas','Ijtihad'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic astronomer corrected Ptolemy\'s planetary model?', o:['Nasir al-Din al-Tusi','Ibn al-Haytham','Al-Biruni','Al-Sufi'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for the area in a mosque where the imam leads prayer?', o:['Mihrab','Maqsura','Minbar','Sahn'], a:0 },
+{ c:'Islamic Civilization', q:'Which Abbasid-era manuscript tradition produced the blue Quran?', o:['Fatimid Kairouan','Umayyad Damascus','Abbasid Baghdad','Moorish Granada'], a:0 },
+{ c:'Islamic Civilization', q:'What is the hadith grading term for a weak narration?', o:['Da\'if','Sahih','Hasan','Mawdu\''], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic coin contained no figurative imagery after the 7th century reforms?', o:['Gold dinar','Silver dirham','Copper fals','Bronze fals'], a:1 },
+{ c:'Islamic Civilization', q:'What is the term for a tomb structure marking a saint\'s burial site?', o:['Dargah','Madrasa','Caravansary','Ribat'], a:0 },
+{ c:'Islamic Civilization', q:'Which Andalusian jurist authored the famous "Risala" on legal theory?', o:['Ibn Abi Zayd','Ibn Rushd','Al-Shatibi','Al-Ghazali'], a:0 },
+{ c:'Islamic Civilization', q:'What is the Sufi concept of fanؤپ\' referring to?', o:['Annihilation of self','Divine love','Mystical vision','Spiritual poverty'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic historian wrote "Tarikh al-Rusul wa al-Muluk"?', o:['Al-Tabari','Ibn al-Athir','Al-Masudi','Ibn Kathir'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for a multi-domed hypostyle hall in Islamic architecture?', o:['Musalla','Qubba','Liwan','Hujra'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic scholar first categorized the sciences needed to study hadith?', o:['Ibn al-Salah','Al-Nawawi','Al-Khatib','Ibn Hajar'], a:0 },
+{ c:'Islamic Civilization', q:'What is the technical term for a corbelled arch in Islamic construction?', o:['Keel arch','Pointed arch','Horseshoe arch','Ogive arch'], a:2 },
+{ c:'Islamic Civilization', q:'Which Mamluk Sultan abolished the position of senior amir in 1341?', o:['Al-Nasir Muhammad','Al-Salih Hajji','Al-Mansur Abu Bakr','Al-Ashraf Kujuk'], a:0 },
+{ c:'Islamic Civilization', q:'What is the name for a water channel in Islamic garden design?', o:['Ariadne','Juy-i','Salsabil','Qanat'], a:2 },
+{ c:'Islamic Civilization', q:'Which Islamic thinker founded the Mu\'tazili theological school?', o:['Wasil ibn Ata','Husayn al-Hallaj','Hasan al-Basri','Abu Hanifa'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for a genre of Islamic devotional poetry sung at night?', o:['Qasida','Madih','Huda','Burda'], a:2 },
+{ c:'Islamic Civilization', q:'Which Fatimid ruler declared himself caliph and established Cairo in 969?', o:['Al-Mu\'izz li-Din Allah','Al-Aziz','Al-Hakim','Al-Mustansir'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for the niche showing the qibla direction in a mosque?', o:['Mihrab','Maqsura','Minbar','Riwaq'], a:0 },
+{ c:'Islamic Civilization', q:'Which hadith grading means the narrator is known to fabricate?', o:['Mawdu\'','Da\'if','Hasan','Sahih'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for a legal precedent used analogically in Islamic law?', o:['Qiyas','Ijma','Ijtihad','Ihsan'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic astronomer compiled the "Tables of Isfahan"?', o:['Jamshid al-Kashi','Ulugh Beg','Nasir al-Din al-Tusi','Ibn al-Shatir'], a:0 },
+{ c:'Islamic Civilization', q:'What is the name for a medieval Islamic hostel for travelers?', o:['Caravansary','Ribat','Zawiya','Khanqah'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic sect rejected the imamate of all but Ismail ibn Jafar?', o:['Nizari Ismailis','Ithna Ashari','Zaydis','Ibadis'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for an unauthorized claim of prophethood in Islamic texts?', o:['Iftira\'','Ridda','Bid\'a','Takfir'], a:0 },
+{ c:'Islamic Civilization', q:'Which script style features overlapping letters in Mughal calligraphy?', o:['Shikasteh','Nastaliq','Diwani','Ta\'liq'], a:0 },
+{ c:'Islamic Civilization', q:'What is the mathematical concept of Arabic origin meaning "restoration"?', o:['Al-jabr','Al-muqabala','Al-shakl','Al-khwarizmi'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic legal school uses the principle of "istihsan" most prominently?', o:['Hanafi','Maliki','Shafi\'i','Hanbali'], a:0 },
+{ c:'Islamic Civilization', q:'What is the term for a vaulted gateway in Islamic architecture?', o:['Bab al-Daraj','Iwan','Qubba','Minaret'], a:1 },
+{ c:'Islamic Civilization', q:'Which Islamic ruler ordered the creation of the "Book of Roads and Kingdoms"?', o:['Caliph al-Mansur','Caliph al-Mahdi','Caliph Harun','Caliph al-Ma\'mun'], a:2 },
+{ c:'Islamic Civilization', q:'What is the Sufi term for a spiritual guide who initiates disciples?', o:['Shaykh','Murshid','Qutb','Wali'], a:0 },
+{ c:'Islamic Civilization', q:'Which Islamic metalwork tradition used inlaid silver and gold decoration?', o:['Khorasani','Damascene','Cairene','Andalusian'], a:1 },
+{ c:'Islamic Civilization', q:'What is the legal term for permission to perform an act otherwise prohibited?', o:['Rukhsa','Ihtiyat','Wujub','Sunnah'], a:0 },
+{ c:'Islamic Civilization', q:'Which mosque type features a central open courtyard surrounded by arcades?', o:['Hypostyle','Domed','Ottoman','Centralized'], a:0 },
+{ c:'Islamic Civilization', q:'What is the hadith term for narrations transmitted by only one companion?', o:['Shadh','Mufrad','Munqati\'','Mu\'allaq'], a:0 },
+{ c:'World History', q:'Which treaty ended the War of Austrian Succession in 1748?', o:['Treaty of Aix-la-Chapelle','Treaty of Utrecht','Treaty of Westphalia','Treaty of Ryswick'], a:0 },
+{ c:'World History', q:'What year did the Haitian Revolution officially end French rule?', o:['1791','1804','1820','1825'], a:1 },
+{ c:'World History', q:'Which Mughal emperor was deposed by the British in 1857?', o:['Bahadur Shah II','Akbar II','Shah Alam II','Farrukhsiyar'], a:0 },
+{ c:'World History', q:'What was the primary cause of the War of Jenkins\' Ear (1739)?', o:['Sea route dispute','Colonial boundary','Religious conflict','Succession crisis'], a:0 },
+{ c:'World History', q:'Which Polynesian civilization was destroyed by European contact in 1797?', o:['Mangareva','Rapa Nui','Nuku Hiva','Hawai\'i'], a:1 },
+{ c:'World History', q:'What year did Portugal cede Macau to China?', o:['1987','1999','2000','1975'], a:1 },
+{ c:'World History', q:'Which Anglo-Dutch war resulted in the Treaty of Breda (1667)?', o:['First','Second','Third','Fourth'], a:1 },
+{ c:'World History', q:'What was the capital of the Inca Empire before Cusco?', o:['Cusco itself','Machu Picchu','Tiahuanaco','Huanuco Pampa'], a:0 },
+{ c:'World History', q:'Which treaty recognized Swiss independence in 1648?', o:['Treaty of Westphalia','Treaty of Bern','Treaty of Zurich','Treaty of Basel'], a:0 },
+{ c:'World History', q:'The Sepoy Mutiny of 1857 took place at which British garrison city first?', o:['Meerut','Delhi','Kanpur','Lucknow'], a:0 },
+{ c:'World History', q:'What year did the Opium War formally begin between Britain and China?', o:['1837','1839','1842','1845'], a:1 },
+{ c:'World History', q:'Which monarch abdicated during the Easter Rising in Ireland in 1916?', o:['George V','No monarch abdicated','Edward VII','None'], a:1 },
+{ c:'World History', q:'What was the primary diplomatic cause of the Fashoda Incident (1898)?', o:['Nile River control','Gold discovery','Slave trade','Religious disputes'], a:0 },
+{ c:'World History', q:'Which empire controlled the Trans-Siberian Railway during WWI?', o:['Russian Empire','Ottoman Empire','Qing Dynasty','Mughal Empire'], a:0 },
+{ c:'World History', q:'The Tanzimat reforms occurred in which Ottoman sultan\'s reign?', o:['Abdulmejid I','Suleiman I','Selim III','Murad V'], a:0 },
+{ c:'World History', q:'What year did the Zulu Kingdom defeat the British at Isandlwana?', o:['1870','1879','1886','1895'], a:1 },
+{ c:'World History', q:'Which treaty ended the Second Barbary War in 1815?', o:['Treaty of Tripoli','Treaty of Algiers','Treaty of Tunis','Treaty of Tangiers'], a:1 },
+{ c:'World History', q:'What was the name of the Ottoman administrative reform edict of 1856?', o:['Gأ¼lhane Edict','Reform Edict','Tanzimat Edict','Imperial Reform'], a:1 },
+{ c:'World History', q:'Which indigenous people fought the New Zealand Land Wars (1845â€“1872)?', o:['Maori','Aborigines','Inuit','Navajo'], a:0 },
+{ c:'World History', q:'The First Opium War was triggered by which official\'s destruction of opium?', o:['Lin Zexu','Hong Xiuquan','Li Hongzhang','Zeng Guofan'], a:0 },
+{ c:'World History', q:'What year did the Spanish Armada attempt its invasion of England?', o:['1585','1588','1591','1594'], a:1 },
+{ c:'World History', q:'Which treaty gave Britain control of Cyprus in 1878?', o:['Treaty of Berlin','Treaty of Paris','Treaty of London','Treaty of Constantinople'], a:0 },
+{ c:'World History', q:'What was the primary cause of the Boxer Rebellion in 1899?', o:['Anti-foreign sentiment','Opium trade','Territory loss','Religious'], a:0 },
+{ c:'World History', q:'Which event sparked the Second Seminole War in 1835?', o:['Indian Removal Act','Treaty of Payne\'s Landing','Removal of Osceola','Slavery dispute'], a:1 },
+{ c:'World History', q:'The Triple Alliance of 1882 included Germany, Austria-Hungary, and which nation?', o:['Italy','Spain','Russia','France'], a:0 },
+{ c:'World History', q:'What year did the Congress of Vienna redraw the European map?', o:['1812','1815','1818','1821'], a:1 },
+{ c:'World History', q:'Which territory did the Monroe Doctrine primarily aim to protect from European intervention?', o:['Latin America','Africa','Asia','Middle East'], a:0 },
+{ c:'World History', q:'What was the primary result of the Russo-Japanese War (1904â€“1905)?', o:['Japanese victory','Russian victory','Mutual stalemate','European intervention'], a:0 },
+{ c:'World History', q:'Which philosopher wrote "The Prince" in 1513?', o:['Thomas More','Niccolأ² Machiavelli','Erasmus','Francis Bacon'], a:1 },
+{ c:'World History', q:'What year did the Meiji Restoration end feudalism in Japan?', o:['1853','1868','1885','1894'], a:1 },
+{ c:'World History', q:'Which empire controlled the Spice Islands before Dutch colonization?', o:['Portuguese Empire','Spanish Empire','Majapahit','Ternate'], a:0 },
+{ c:'World History', q:'What was the primary result of the Franco-Prussian War (1870â€“1871)?', o:['German unification','French victory','Italian unification','Austrian defeat'], a:0 },
+{ c:'World History', q:'Which treaty ended the Thirty Years\' War in 1648?', o:['Treaty of Westphalia','Peace of Augsburg','Treaty of Versailles','Treaty of Utrecht'], a:0 },
+{ c:'World History', q:'The Scramble for Africa was formalized at which Berlin Conference year?', o:['1882','1884','1890','1896'], a:1 },
+{ c:'World History', q:'What year did the Haitian slaves revolt against French colonial rule?', o:['1789','1791','1794','1801'], a:1 },
+{ c:'World History', q:'Which Anglo-Mysore War resulted in the death of Tipu Sultan?', o:['First','Second','Third','Fourth'], a:3 },
+{ c:'World History', q:'What year did the Dutch East India Company formally dissolve?', o:['1796','1799','1802','1810'], a:1 },
+{ c:'World History', q:'Which empire used the devshirme system for conscripting Christian youth?', o:['Byzantine Empire','Ottoman Empire','Mughal Empire','Safavid Empire'], a:1 },
+{ c:'World History', q:'What year was the Emancipation Proclamation issued by Abraham Lincoln?', o:['1861','1863','1865','1868'], a:1 },
+{ c:'World History', q:'The Battle of Lepanto (1571) was fought between which two alliances?', o:['Holy League vs. Ottomans','France vs. Spain','Venice vs. Genoa','Byzantines vs. Arabs'], a:0 },
+{ c:'World History', q:'What year did the Spanish-American War result in U.S. acquisition of Puerto Rico?', o:['1895','1898','1900','1903'], a:1 },
+{ c:'World History', q:'Which dynasty ruled Vietnam when France colonized it in the 1850s?', o:['Nguyen','Lأھ','Trinh','Nguyen lords'], a:0 },
+{ c:'World History', q:'What was the primary cause of the War of the Pacific (1879â€“1884)?', o:['Nitrate deposits','Border dispute','Religious conflict','Trade monopoly'], a:0 },
+{ c:'World History', q:'Which treaty partitioned Africa between colonial powers in 1884â€“1885?', o:['Berlin Conference','Treaty of Tordesillas','Treaty of Alcأ،أ§ovas','Treaty of Zaragoza'], a:0 },
+{ c:'World History', q:'What year did the French Revolution\'s Reign of Terror begin?', o:['1789','1790','1793','1795'], a:2 },
+{ c:'World History', q:'Which empire controlled Madagascar before French colonization in 1896?', o:['Merina Kingdom','Sakalava','Mahafaly','Betsileo'], a:0 },
+{ c:'World History', q:'What year was the Magna Carta signed by King John of England?', o:['1195','1215','1250','1265'], a:1 },
+{ c:'World History', q:'Which war was triggered by the assassination of Archduke Franz Ferdinand?', o:['Franco-Prussian War','World War I','Russo-Japanese War','Boer War'], a:1 },
+{ c:'World History', q:'The Paris Peace Conference after WWI created which mandate system in the Middle East?', o:['British and French mandates','Ottoman territory transfer','League of Nations control','American oversight'], a:0 },
+{ c:'World History', q:'What was the primary diplomatic cause of the Crisis of 1875â€“1878 in the Balkans?', o:['Slavic nationalism','Trade embargo','Religious dispute','Succession crisis'], a:0 },
+{ c:'Geography', q:'What is the longest tributary of the Amazon River by volume?', o:['Madeira','Negro','Japurأ،','Purus'], a:0 },
+{ c:'Geography', q:'Which Kأ¶ppen classification has hot summers and cold winters with dry summers?', o:['Csa','Csb','Cwa','Cfa'], a:0 },
+{ c:'Geography', q:'What is the deepest point of the Indian Ocean called?', o:['Java Trench','Sunda Trench','Mariana Trench','Philippine Trench'], a:1 },
+{ c:'Geography', q:'Which ocean current carries warm water from the Gulf of Mexico northeast?', o:['Canary Current','North Atlantic Drift','Labrador Current','Gulf Stream'], a:3 },
+{ c:'Geography', q:'Mount Pinatubo\'s 1991 eruption rated what on the VEI scale?', o:['5','6','7','4'], a:1 },
+{ c:'Geography', q:'What geological era saw the formation of the Appalachian Mountains?', o:['Paleozoic','Mesozoic','Cenozoic','Precambrian'], a:0 },
+{ c:'Geography', q:'Which biodiversity hotspot covers parts of Madagascar and the Comoros?', o:['Atlantic Forest','Eastern Afromontane','Madagascar and Indian Ocean Islands','Coastal Forest of EA'], a:2 },
+{ c:'Geography', q:'The Caspian Sea lies at approximately which latitude?', o:['35آ°N','42آ°N','47آ°N','52آ°N'], a:2 },
+{ c:'Geography', q:'Which African river is the second longest on the continent?', o:['Congo','Niger','Zambezi','Okavango'], a:0 },
+{ c:'Geography', q:'What is the Kأ¶ppen classification for a tropical rainforest climate?', o:['Af','Am','Aw','BWh'], a:0 },
+{ c:'Geography', q:'Which volcano in Chile is the highest active volcano in the world?', o:['Cotopaxi','Ojos del Salado','Lascar','Villarrica'], a:1 },
+{ c:'Geography', q:'The Humboldt Current flows along which continent\'s western coast?', o:['Africa','North America','South America','Australia'], a:2 },
+{ c:'Geography', q:'What is the largest island in the Indonesian archipelago by area?', o:['Sumatra','Borneo','Java','Sulawesi'], a:0 },
+{ c:'Geography', q:'Which oceanic trench forms the deepest part of the Atlantic Ocean?', o:['Puerto Rico Trench','Romanche Trench','South Sandwich Trench','Puerto Rico'], a:0 },
+{ c:'Geography', q:'The Salar de Uyuni is located in which country?', o:['Chile','Argentina','Bolivia','Peru'], a:2 },
+{ c:'Geography', q:'What type of geological formation is a "horst"?', o:['Uplifted block between faults','Volcanic crater','Fold mountain','Glacial valley'], a:0 },
+{ c:'Geography', q:'Which European river has the largest drainage basin?', o:['Danube','Volga','Rhine','Elbe'], a:1 },
+{ c:'Geography', q:'The Kermadec Trench is located in which ocean?', o:['Atlantic','Indian','Pacific','Southern'], a:2 },
+{ c:'Geography', q:'What is the Kأ¶ppen classification for a Mediterranean climate?', o:['Cfa','Cfb','Csa','Dfb'], a:2 },
+{ c:'Geography', q:'Mount Kilimanjaro has how many volcanic cones?', o:['1','2','3','4'], a:2 },
+{ c:'Geography', q:'Which river forms part of the border between Russia and China?', o:['Amur','Ob','Yenisei','Lena'], a:0 },
+{ c:'Geography', q:'The Mariana Trench is located near which island chain?', o:['Philippines','Mariana Islands','Japan','Taiwan'], a:1 },
+{ c:'Geography', q:'What geological process created the Himalayas?', o:['Subduction','Continental collision','Volcanic activity','Glacial erosion'], a:1 },
+{ c:'Geography', q:'Which Mediterranean island has an active volcano named Stromboli?', o:['Sicily','Sardinia','Aeolian Islands','Corsica'], a:2 },
+{ c:'Geography', q:'The Draka Current flows along which continent\'s coast?', o:['South America','Africa','Australia','Antarctica'], a:1 },
+{ c:'Geography', q:'What is the approximate elevation of Lake Titicaca?', o:['2,850 m','3,812 m','4,200 m','5,100 m'], a:1 },
+{ c:'Geography', q:'Which biodiversity hotspot contains the Cloud Forests of Central America?', o:['Tumbes-Chocأ³','Mesoamerica','Atlantic Forest','Chilean Winter Rainfall'], a:1 },
+{ c:'Geography', q:'The Eyjafjallajأ¶kull volcano erupted in which year?', o:['2008','2009','2010','2011'], a:2 },
+{ c:'Geography', q:'What is the largest coral reef system by area?', o:['Belize Barrier Reef','Red Sea Reef','New Caledonia Barrier Reef','Great Barrier Reef'], a:3 },
+{ c:'Geography', q:'Which African river flows through the largest canyon after the Grand Canyon?', o:['Orange River','Zambezi','Limpopo','Nile'], a:1 },
+{ c:'Geography', q:'The Aleutian Trench is located near which U.S. state?', o:['Alaska','California','Hawaii','Washington'], a:0 },
+{ c:'Geography', q:'What Kأ¶ppen climate is characterized by year-round rainfall exceeding 60mm each month?', o:['Af','Am','Cfb','Aw'], a:0 },
+{ c:'Geography', q:'Which rift lake is the oldest and second-deepest in Africa?', o:['Tanganyika','Malawi','Turkana','Albert'], a:0 },
+{ c:'Geography', q:'The Sunda Shelf connects which two landmasses?', o:['Borneo and Sumatra','Java and Bali','Borneo and Java','Sumatra and Malay Peninsula'], a:3 },
+{ c:'Geography', q:'What is the VEI rating of the Krakatoa eruption in 1883?', o:['5','6','7','8'], a:2 },
+{ c:'Geography', q:'Which Arctic ocean current carries cold water south along Labrador?', o:['East Greenland Current','Labrador Current','Norwegian Current','Baffin Current'], a:1 },
+{ c:'Geography', q:'The Andaman Sea lies between which two geographical areas?', o:['India and Myanmar','Thailand and Malaysia','Myanmar and Thailand','India and Indonesia'], a:1 },
+{ c:'Geography', q:'What type of rock formation is a "monadnock"?', o:['Eroded hill remnant','Volcanic plug','Glacial drumlin','Sand dune'], a:0 },
+{ c:'Geography', q:'Which European river flows through the most countries?', o:['Danube','Rhine','Elbe','Po'], a:0 },
+{ c:'Geography', q:'The Kuroshio Current flows along which country\'s coast?', o:['South Korea','Philippines','Japan','Taiwan'], a:2 },
+{ c:'Geography', q:'What is the Kأ¶ppen classification for a tropical monsoon climate?', o:['Af','Am','Aw','BSh'], a:1 },
+{ c:'Geography', q:'The Fish River Canyon is located in which African country?', o:['Namibia','South Africa','Botswana','Zambia'], a:0 },
+{ c:'Geography', q:'Which biodiversity hotspot encompasses the Cape Floristic Region?', o:['Succulent Karoo','Cape Floristic Region','Madagascar','Maputaland'], a:1 },
+{ c:'Geography', q:'What is the depth of Lake Baikal at its maximum?', o:['1,642 m','1,731 m','1,880 m','2,015 m'], a:1 },
+{ c:'Geography', q:'The Kerguelen Plateau is located in which ocean?', o:['Atlantic','Indian','Pacific','Southern'], a:1 },
+{ c:'Geography', q:'Which geological formation is a "butte"?', o:['Eroded flat-topped hill','Volcanic crater','River delta','Glacial trough'], a:0 },
+{ c:'Geography', q:'What is the largest salt desert by area in the world?', o:['Dasht-e Kavir','Salar de Uyuni','Dasht-e Lut','Etosha Pan'], a:1 },
+{ c:'Geography', q:'The Tonga Trench reaches its maximum depth at which point?', o:['Horizon Deep','Challenger Deep','Emslow Deep','Planet Deep'], a:0 },
+{ c:'Geography', q:'Which Scandinavian fjord has the greatest depth?', o:['Sognefjorden','Hardangerfjorden','Geirangerfjorden','Nordfjord'], a:0 },
+{ c:'Geography', q:'What type of geological formation is a "karst" landscape formed from?', o:['Limestone dissolution','Volcanic lava','Glacial till','Sandstone erosion'], a:0 },
+{ c:'Science', q:'What is the name of the force between two metal plates in vacuum at close range?', o:['Casimir force','Van der Waals force','Pauli repulsion','Lennard-Jones force'], a:0 },
+{ c:'Science', q:'Which effect detects rotation using counter-propagating light beams?', o:['Sagnac effect','Zeeman effect','Doppler effect','Stark effect'], a:0 },
+{ c:'Science', q:'In glycolysis, what molecule is converted to pyruvate in the final step?', o:['Phosphoenolpyruvate','Fructose-1,6-bisphosphate','Glyceraldehyde-3-phosphate','3-Phosphoglycerate'], a:0 },
+{ c:'Science', q:'Which chemical reaction type involves loss of electrons from a species?', o:['Oxidation','Reduction','Hydrolysis','Condensation'], a:0 },
+{ c:'Science', q:'What is the SI unit of magnetic flux density?', o:['Weber','Tesla','Henry','Gauss'], a:1 },
+{ c:'Science', q:'Which biological pathway converts acetyl-CoA to cholesterol?', o:['Mevalonate pathway','Krebs cycle','Beta-oxidation','Urea cycle'], a:0 },
+{ c:'Science', q:'What type of bond involves the sharing of electron pairs between atoms?', o:['Covalent bond','Ionic bond','Metallic bond','Hydrogen bond'], a:0 },
+{ c:'Science', q:'Which astronomical object is designated Messier 31?', o:['Orion Nebula','Andromeda Galaxy','Pleiades','Crab Nebula'], a:1 },
+{ c:'Science', q:'What is the Mohs hardness rating of diamond?', o:['8','9','10','7'], a:2 },
+{ c:'Science', q:'Which geological process involves the folding of rock layers under stress?', o:['Orogenesis','Subduction','Sedimentation','Faulting'], a:0 },
+{ c:'Science', q:'What is the name of the enzyme that synthesizes RNA from a DNA template?', o:['DNA polymerase','RNA polymerase','Helicase','Ligase'], a:1 },
+{ c:'Science', q:'Which effect describes the change in frequency of light in a gravitational field?', o:['Shapiro delay','Gravitational redshift','Frame dragging','Gravitational lensing'], a:1 },
+{ c:'Science', q:'What is the IUPAC name for the compound CHâ‚ƒCHâ‚‚OH?', o:['Methanol','Ethanol','Propanol','Butanol'], a:1 },
+{ c:'Science', q:'Which mineral has the chemical formula CaCOâ‚ƒ?', o:['Dolomite','Calcite','Gypsum','Halite'], a:1 },
+{ c:'Science', q:'What is the Krebs cycle also known as?', o:['Glycolysis','Citric acid cycle','Electron transport chain','Oxidative phosphorylation'], a:1 },
+{ c:'Science', q:'Which process involves the conversion of sunlight into chemical energy?', o:['Chemosynthesis','Photosynthesis','Fermentation','Respiration'], a:1 },
+{ c:'Science', q:'What is the primary product of the Calvin cycle in photosynthesis?', o:['ATP','G3P','NADPH','Oxygen'], a:1 },
+{ c:'Science', q:'Which galaxy is part of the Local Group alongside the Milky Way?', o:['Centaurus A','Triangulum Galaxy','Sombrero Galaxy','Whirlpool Galaxy'], a:1 },
+{ c:'Science', q:'What is the chemical formula for sulfuric acid?', o:['HNOâ‚ƒ','Hâ‚‚SOâ‚„','HCl','Hâ‚ƒPOâ‚„'], a:1 },
+{ c:'Science', q:'Which effect causes the apparent shift of a star\'s position due to Earth\'s orbit?', o:['Stellar aberration','Parallax','Redshift','Nutation'], a:0 },
+{ c:'Science', q:'What type of reaction releases heat to its surroundings?', o:['Exothermic','Endothermic','Isothermal','Adiabatic'], a:0 },
+{ c:'Science', q:'Which vitamin is synthesized in human skin upon UV exposure?', o:['Vitamin A','Vitamin C','Vitamin D','Vitamin E'], a:2 },
+{ c:'Science', q:'What is the name of the process where tectonic plates move apart?', o:['Subduction','Spreading','Transform','Rifting'], a:3 },
+{ c:'Science', q:'Which reaction mechanism proceeds through a carbocation intermediate?', o:['SN2','SN1','E2','Addition'], a:1 },
+{ c:'Science', q:'What is the critical temperature of liquid nitrogen in Kelvin?', o:['63 K','77 K','90 K','110 K'], a:1 },
+{ c:'Science', q:'Which named effect causes ferromagnetic materials to retain magnetism after field removal?', o:['Hysteresis','Coulomb effect','Faraday effect','Piezoelectric effect'], a:0 },
+{ c:'Science', q:'What is the half-life of carbon-14 in years?', o:['1,146','2,380','3,570','5,730'], a:3 },
+{ c:'Science', q:'Which enzyme catalyzes the conversion of glucose to glucose-6-phosphate?', o:['Hexokinase','Phosphofructokinase','Pyruvate kinase','Aldolase'], a:0 },
+{ c:'Science', q:'What is the primary carrier protein for oxygen in blood?', o:['Hemoglobin','Myoglobin','Albumin','Transferrin'], a:0 },
+{ c:'Science', q:'Which chemical bond is strongest among single covalent bonds?', o:['Câ€“H','Câ€“C','Câ€“O','Câ€“F'], a:3 },
+{ c:'Science', q:'What is the approximate surface temperature of the Sun in Celsius?', o:['4,500آ°C','5,500آ°C','6,500آ°C','7,500آ°C'], a:1 },
+{ c:'Science', q:'Which named effect describes a conductor\'s resistance change with temperature?', o:['Peltier effect','Seebeck effect','Thomson effect','Joule heating'], a:2 },
+{ c:'Science', q:'What is the largest organ in the human body by weight?', o:['Liver','Brain','Skin','Heart'], a:0 },
+{ c:'Science', q:'Which type of chromatography separates molecules by charge?', o:['Ion exchange','Gas-liquid','Size exclusion','Affinity'], a:0 },
+{ c:'Science', q:'What is the SI unit of electric current?', o:['Volt','Watt','Ampere','Coulomb'], a:2 },
+{ c:'Science', q:'Which chemical group is responsible for the acidity of carboxylic acids?', o:['Hydroxyl','Carboxyl','Carbonyl','Amine'], a:1 },
+{ c:'Science', q:'What is the process of converting a liquid to gas at its boiling point called?', o:['Sublimation','Evaporation','Boiling','Condensation'], a:2 },
+{ c:'Science', q:'Which star cluster contains the star Aldebaran?', o:['Hyades','Pleiades','Beehive Cluster','Coma Cluster'], a:0 },
+{ c:'Science', q:'What is the chemical formula for ozone?', o:['Oâ‚‚','Oâ‚ƒ','Oâ‚„','O'], a:1 },
+{ c:'Science', q:'Which geological era is known as the "Age of Reptiles"?', o:['Paleozoic','Mesozoic','Cenozoic','Precambrian'], a:1 },
+{ c:'Science', q:'What is the Mohs hardness of quartz?', o:['5','6','7','8'], a:2 },
+{ c:'Science', q:'Which enzyme breaks down hydrogen peroxide in cells?', o:['Catalase','Superoxide dismutase','Peroxidase','Cytochrome c oxidase'], a:0 },
+{ c:'Science', q:'What is the approximate speed of light in vacuum in km/s?', o:['150,000','200,000','300,000','400,000'], a:2 },
+{ c:'Science', q:'Which galaxy\'s redshift led to the discovery of the expanding universe?', o:['Andromeda','Triangulum','Sombrero','NGC 4414'], a:2 },
+{ c:'Science', q:'What is the name of the junction between two neurons?', o:['Synapse','Gap junction','Desmosome','Tight junction'], a:0 },
+{ c:'Science', q:'Which mineral is the primary component of olivine?', o:['Iron-magnesium silicate','Calcium carbonate','Aluminum oxide','Sodium chloride'], a:0 },
+{ c:'Science', q:'What is the name of the phenomenon where light bends around an obstacle?', o:['Refraction','Diffraction','Reflection','Dispersion'], a:1 },
+{ c:'Science', q:'Which gas is the most abundant in Earth\'s atmosphere by volume?', o:['Oxygen','Argon','Carbon dioxide','Nitrogen'], a:3 },
+{ c:'Science', q:'What is the energy carrier molecule produced during glycolysis?', o:['NADPH','FADHâ‚‚','ATP','GTP'], a:2 },
+{ c:'Science', q:'Which effect describes a voltage difference created by temperature gradient?', o:['Peltier effect','Seebeck effect','Thomson effect','Hall effect'], a:1 },
+{ c:'Politics', q:'Which country uses the Additional Member System for parliamentary elections?', o:['United States','Germany','France','Japan'], a:1 },
+{ c:'Politics', q:'What constitutional mechanism allows U.S. states to propose amendments without Congress?', o:['Article V convention','Popular referendum','State executive order','Supreme Court ruling'], a:0 },
+{ c:'Politics', q:'Which international court case established the "clean hands" doctrine?', o:['Temple of Preah Vihear','Island of Palmas','Corfu Channel','Nicaragua v. USA'], a:1 },
+{ c:'Politics', q:'What is the name of Japan\'s post-WWII constitutional pacifist clause?', o:['Article 1','Article 9','Article 14','Article 25'], a:1 },
+{ c:'Politics', q:'Which political philosophy advocates worker ownership of the means of production?', o:['Social democracy','Syndicalism','Libertarianism','Fascism'], a:1 },
+{ c:'Politics', q:'What was the outcome of the 2016 UK EU membership referendum?', o:['52% Remain','48% Leave','52% Leave','48% Remain'], a:2 },
+{ c:'Politics', q:'Which constitutional principle prevents the same person from being tried twice?', o:['Due process','Double jeopardy','Habeas corpus','Ex post facto'], a:1 },
+{ c:'Politics', q:'What is the official name of the French electoral system for president?', o:['Single transferable vote','Two-round system','First-past-the-post','Proportional representation'], a:1 },
+{ c:'Politics', q:'Which Vienna Convention governs diplomatic immunity between states?', o:['1961 Convention','1969 Convention','1982 Convention','1986 Convention'], a:0 },
+{ c:'Politics', q:'What term describes a government where a single party dominates completely?', o:['Oligarchy','Authoritarian','Single-party state','Theocracy'], a:2 },
+{ c:'Politics', q:'Which landmark case established judicial review in the United States?', o:['Marbury v. Madison','Brown v. Board','McCulloch v. Maryland','Roe v. Wade'], a:0 },
+{ c:'Politics', q:'What is the threshold percentage for proportional representation in Germany\'s Bundestag?', o:['3%','5%','7%','10%'], a:1 },
+{ c:'Politics', q:'Which country abolished its upper house of parliament in 1958?', o:['Denmark','Sweden','Iceland','Norway'], a:0 },
+{ c:'Politics', q:'What is the name of the EU\'s mandatory majority voting procedure?', o:['Qualified majority','Unanimity','Simple majority','Enhanced cooperation'], a:0 },
+{ c:'Politics', q:'Which Swiss direct democracy tool allows citizens to propose constitutional amendments?', o:['Referendum','Initiative','Volksbegehren','Abstimmung'], a:1 },
+{ c:'Politics', q:'What is the term for a legislature\'s power to investigate executive actions?', o:['Oversight power','Check and balance','Impeachment power','Subpoena power'], a:0 },
+{ c:'Politics', q:'Which country uses the Supplementary Member System for national elections?', o:['New Zealand','Australia','Canada','Ireland'], a:0 },
+{ c:'Politics', q:'What principle requires that government acts be based on law rather than discretion?', o:['Rule of law','Separation of powers','Federalism','Judicial independence'], a:0 },
+{ c:'Politics', q:'Which international body ruled on the dispute between Argentina and Uruguay over pulp mills?', o:['ICJ','WTO','Permanent Court of Arbitration','ITU'], a:2 },
+{ c:'Politics', q:'What is the term for a legislative provision inserted into a larger bill?', o:['Rider','Amendment','Caveat','Proviso'], a:0 },
+{ c:'Politics', q:'Which system allows citizens to remove elected officials before term expiration?', o:['Ret Recall','Recall election','Motion of no confidence','Impeachment'], a:1 },
+{ c:'Politics', q:'What is the highest turnout referendum in Swiss history by percentage?', o:['2014 mass immigration','1992 EEA vote','1957 nuclear power','1971 women\'s suffrage'], a:1 },
+{ c:'Politics', q:'Which constitutional clause prevents double taxation between EU member states?', o:['Arbitration clause','Non-discrimination clause','Mutual recognition','Fiscal neutrality'], a:0 },
+{ c:'Politics', q:'What is the name of the UK parliamentary committee that scrutinizes proposed legislation?', o:['Committee Stage','Public Bill Committee','Select Committee','Liaison Committee'], a:1 },
+{ c:'Politics', q:'Which countryه®‍è،Œs the "constructive vote of no confidence"?', o:['Austria','Germany','Italy','Spain'], a:1 },
+{ c:'Politics', q:'What is the term for excessive lawmaking in constitutional politics?', o:['Constitutional overreach','Legislative inflation','Statutory hypertrophy','Legal maximalism'], a:2 },
+{ c:'Politics', q:'Which electoral system awards seats based on percentage of vote received?', o:['FPTP','STV','Proportional representation','Runoff'], a:2 },
+{ c:'Politics', q:'What constitutional provision allows Indian President to impose President\'s Rule?', o:['Article 356','Article 370','Article 32','Article 226'], a:0 },
+{ c:'Politics', q:'Which international court advisory opinion dealt with Israeli separation barrier?', o:['ICJ 2004 opinion','ICJ 1996 opinion','PCA 2016 opinion','ITLOS opinion'], a:0 },
+{ c:'Politics', q:'What is the term for a clause in a treaty allowing withdrawal with notice?', o:['Denunciation clause','Opt-out clause','Sunset clause','Exit clause'], a:0 },
+{ c:'Politics', q:'Which Scandinavian country uses a unicameral parliament with 349 seats?', o:['Norway','Sweden','Denmark','Finland'], a:1 },
+{ c:'Politics', q:'What principle prevents parliament from binding future parliaments?', o:['Parliamentary sovereignty','Constitutional supremacy','Separation of powers','Judicial review'], a:0 },
+{ c:'Politics', q:'Which country has the oldest written constitution still in force?', o:['United States','France','San Marino','Norway'], a:0 },
+{ c:'Politics', q:'What is the name of the EU\'s dispute resolution mechanism for trade issues?', o:['WTO DSB','EU Mediation Service','European Arbitration Court','MEDUSA'], a:0 },
+{ c:'Politics', q:'Which voting method eliminates candidates sequentially until one remains?', o:['Instant runoff','Borda count','Coombs method','Bucklin voting'], a:0 },
+{ c:'Politics', q:'What constitutional amendment granted women\'s suffrage in the U.S.?', o:['17th','18th','19th','20th'], a:2 },
+{ c:'Politics', q:'Which countryه®‍è،Œs a semi-presidential system with cohabitation potential?', o:['Germany','United Kingdom','France','Italy'], a:2 },
+{ c:'Politics', q:'What is the term for executive decree with force of law in some countries?', o:['Ordinance','Edict','Decree','Decree-law'], a:3 },
+{ c:'Politics', q:'Which ICJ case established the principle of "territorial integrity" over self-determination?', o:['Western Sahara','Nicaragua v. USA','Bosnia v. Serbia','East Timor'], a:0 },
+{ c:'Politics', q:'What is the Swiss federal council\'s decision-making principle called?', o:['Collegiality principle','Consensus model','Majority rule','Directorate'], a:0 },
+{ c:'Politics', q:'Which Australian referendum proposed a republic model in 1999?', o:['2000 referendum','1999 referendum','2001 referendum','1998 referendum'], a:1 },
+{ c:'Politics', q:'What constitutional doctrine prevents excessive delegation of legislative power?', o:['Non-delegation doctrine','Separation of powers','Commerce clause','Due process'], a:0 },
+{ c:'Politics', q:'Which voting system is used to elect French senators?', o:['FPTP','Indirect election','Two-round system','Proportional'], a:1 },
+{ c:'Politics', q:'What is the term for a constitutional crisis where no branch can resolve a deadlock?', o:['Fiscal cliff','Constitutional impasse','Legal vacuum','Deadlock crisis'], a:1 },
+{ c:'Politics', q:'Which EU member state opted out of the Schengen Agreement initially?', o:['Germany','France','United Kingdom','Spain'], a:2 },
+{ c:'Politics', q:'What is the legal term for nullifying the effects of an unconstitutional law?', o:['Severability','Invalidation','Void ab initio','Retroactive repeal'], a:1 },
+{ c:'Politics', q:'Which countryه®‍è،Œs a National Popular Vote Interstate Compact system?', o:['United States','Switzerland','India','Germany'], a:0 },
+{ c:'Politics', q:'What is the term for executive veto power requiring legislative override by supermajority?', o:['Suspended veto','Pocket veto','Absolute veto','Suspensive veto'], a:0 },
+{ c:'Politics', q:'Which Middle Eastern country abolished its monarchy by referendum in 1974?', o:['Greece','Iran','Ethiopia','Libya'], a:0 },
+{ c:'Politics', q:'What is the term for a legislative session convened specifically to address one issue?', o:['Special session','Extraordinary session','Called session','Emergency parliament'], a:1 },
+{ c:'Literature', q:'Who wrote the novel "The Tale of Genji" around 1008 CE?', o:['Murasaki Shikibu','Sei Shإچnagon','Matsuo Bashإچ','Kenji Miyazawa'], a:0 },
+{ c:'Literature', q:'Which literary prize was awarded annually by the Swedish Academy from 1901?', o:['Nobel Prize in Literature','Booker Prize','Pulitzer Prize','Goncourt Prize'], a:0 },
+{ c:'Literature', q:'What literary device involves giving human qualities to inanimate objects?', o:['Simile','Metaphor','Personification','Alliteration'], a:2 },
+{ c:'Literature', q:'Which novel begins with "Call me Ishmael"?', o:['Moby-Dick','Great Expectations','Ulysses','War and Peace'], a:0 },
+{ c:'Literature', q:'Who authored the manifesto of the Futurist movement in 1909?', o:['F.T. Marinetti','Andrأ© Breton','Tristan Tzara','Hugo Ball'], a:0 },
+{ c:'Literature', q:'Which banned book depicted the Spanish Civil War under the title "For Whom the Bell Tolls"?', o:['Ernest Hemingway','George Orwell','John Steinbeck','Aldous Huxley'], a:0 },
+{ c:'Literature', q:'What is the term for a storyâ€™s setting that is imaginary or non-realistic?', o:['Realistic fiction','Allegory','Utopia','Fantasy'], a:1 },
+{ c:'Literature', q:'Which poet wrote "The Waste Land" in 1922?', o:['T.S. Eliot','Ezra Pound','W.B. Yeats','Wallace Stevens'], a:0 },
+{ c:'Literature', q:'What is the French literary prize awarded by the Acadأ©mie Goncourt?', o:['Prix Goncourt','Prix Renaudot','Prix Mأ©dicis','Prix Femina'], a:0 },
+{ c:'Literature', q:'Which novel by George Orwell was published in 1949?', o:['Animal Farm','Nineteen Eighty-Four','Down and Out','Burmese Days'], a:1 },
+{ c:'Literature', q:'Who wrote the epic poem "Paradise Lost" in 1667?', o:['John Milton','Alexander Pope','Geoffrey Chaucer','Edmund Spenser'], a:0 },
+{ c:'Literature', q:'What literary device uses the first letter of each line to spell a word?', o:['Acrostic','Anaphora','Epistrophe','Chiasmus'], a:0 },
+{ c:'Literature', q:'Which 1984 novel by Salman Rushdie was banned in India until 2000?', o:['Midnight\'s Children','The Satanic Verses','Shame','Grimus'], a:1 },
+{ c:'Literature', q:'What term describes a narrative that begins in the middle of the action?', o:['In medias res','Exposition','Denouement','Flashback'], a:0 },
+{ c:'Literature', q:'Who authored the collection "The Pillow Book" in Heian-era Japan?', o:['Sei Shإچnagon','Murasaki Shikibu','Izumi Shikibu','Ono no Komachi'], a:0 },
+{ c:'Literature', q:'Which German Expressionist novel was published in 1915?', o:['The Trial','Demian','The Castle','Siddhartha'], a:1 },
+{ c:'Literature', q:'What is the International Booker Prize originally called?', o:['Man Booker International Prize','Commonwealth Prize','Baileys Prize','Cervantes Prize'], a:0 },
+{ c:'Literature', q:'Which banned book was first published in 1934 in France under the title "Tropic of Cancer"?', o:['Henry Miller','Anais Nin','Jack Kerouac','Charles Bukowski'], a:0 },
+{ c:'Literature', q:'What literary technique involves heavy use of symbolism throughout a narrative?', o:['Imagism','Allegory','Surrealism','Naturalism'], a:1 },
+{ c:'Literature', q:'Who wrote "One Hundred Years of Solitude" published in 1967?', o:['Gabriel Garcأ­a Mأ،rquez','Julio Cortأ،zar','Carlos Fuentes','Jorge Luis Borges'], a:0 },
+{ c:'Literature', q:'What is the term for a novel that deals with artist\'s growth and development?', o:['Kأ¼nstlerroman','Bildungsroman','Roman أ  clef','Picaresque'], a:0 },
+{ c:'Literature', q:'Which Russian author wrote "The Brothers Karamazov" published in 1880?', o:['Fyodor Dostoevsky','Leo Tolstoy','Anton Chekhov','Ivan Turgenev'], a:0 },
+{ c:'Literature', q:'What literary device involves contrasting ideas in balanced phrases?', o:['Antithesis','Parallelism','Hyperbole','Oxymoron'], a:0 },
+{ c:'Literature', q:'Which poet won the Nobel Prize in Literature in 1948 for "verse of visionary power"?', o:['W.B. Yeats','T.S. Eliot','W.H. Auden','Eugenio Montale'], a:0 },
+{ c:'Literature', q:'What is the name for a collection of poems arranged as a story?', o:['Anthology','Cycle','Sequence','Corpus'], a:1 },
+{ c:'Literature', q:'Which novel by Virginia Woolf was published in 1927?', o:['Mrs Dalloway','To the Lighthouse','Orlando','A Room of One\'s Own'], a:1 },
+{ c:'Literature', q:'What literary award was first given in 1950 by the U.S. National Book Foundation?', o:['Pulitzer Prize','National Book Award','PEN/Faulkner','Booker Prize'], a:1 },
+{ c:'Literature', q:'Who wrote the modernist novel "Ulysses" published in 1922?', o:['James Joyce','Marcel Proust','Franz Kafka','Thomas Mann'], a:0 },
+{ c:'Literature', q:'Which banned book in the U.S. was titled "The Grapes of Wrath" in 1939?', o:['John Steinbeck','Harper Lee','William Faulkner','Richard Wright'], a:0 },
+{ c:'Literature', q:'What is the term for a novel set in an imagined alternative reality?', o:['Utopian novel','Counterfactual fiction','Alternate history','Science fiction'], a:0 },
+{ c:'Literature', q:'Which Japanese poet wrote the haiku "An old silent pond..."?', o:['Matsuo Bashإچ','Yosa Buson','Kobayashi Issa','Masaoka Shiki'], a:0 },
+{ c:'Literature', q:'What literary movement emphasized subjective emotion in the early 19th century?', o:['Romanticism','Classicism','Realism','Naturalism'], a:0 },
+{ c:'Literature', q:'Who authored the dystopian novel "Brave New World" in 1932?', o:['Aldous Huxley','George Orwell','Ray Bradbury','H.G. Wells'], a:0 },
+{ c:'Literature', q:'What term describes the repetition of consonant sounds at the beginning of words?', o:['Assonance','Alliteration','Consonance','Rhyme'], a:1 },
+{ c:'Literature', q:'Which French author wrote "Les Misأ©rables" published in 1862?', o:['Victor Hugo','أ‰mile Zola','Honorأ© de Balzac','Alexandre Dumas'], a:0 },
+{ c:'Literature', q:'What literary prize is awarded to a Canadian writer for a first novel?', o:['Giller Prize','Governor General\'s Award','Trillium Book Award','Amazon.ca First Novel'], a:3 },
+{ c:'Literature', q:'Who wrote "The Canterbury Tales" in the late 14th century?', o:['Geoffrey Chaucer','William Langland','John Gower','Thomas Malory'], a:0 },
+{ c:'Literature', q:'What is the term for an author\'s repeated use of certain words or themes?', o:['Motif','Trope','Leitmotif','Motive'], a:0 },
+{ c:'Literature', q:'Which novel by F. Scott Fitzgerald was published in 1925?', o:['Tender Is the Night','The Great Gatsby','This Side of Paradise','The Beautiful and Damned'], a:1 },
+{ c:'Literature', q:'What banned book was written by D.H. Lawrence and published in 1928?', o:['Lady Chatterley\'s Lover','Sons and Lovers','Women in Love','The Rainbow'], a:0 },
+{ c:'Literature', q:'Which Russian poet won the Nobel Prize in Literature in 1987?', o:['Joseph Brodsky','Boris Pasternak','Andrei Sakharov','Anna Akhmatova'], a:0 },
+{ c:'Literature', q:'What is the term for a story that is presented as having been written by a character?', o:['Frame narrative','Found manuscript','Pseudo-chronicle','Epistolary novel'], a:1 },
+{ c:'Literature', q:'Who authored "Don Quixote" first published in 1605?', o:['Cervantes','Calderأ³n','Lope de Vega','Gأ³ngora'], a:0 },
+{ c:'Literature', q:'Which literary movement advocated "art for art\'s sake" in the 19th century?', o:['Aestheticism','Realism','Naturalism','Symbolism'], a:0 },
+{ c:'Literature', q:'What is the name for a protagonist who is also the narrator?', o:['First-person narrator','Unreliable narrator','Focalizer','Dramatic narrator'], a:0 },
+{ c:'Literature', q:'Which 19th-century author wrote "Middlemarch" in 1871â€“1872?', o:['George Eliot','Charlotte Brontأ«','Jane Austen','Thomas Hardy'], a:0 },
+{ c:'Literature', q:'What term describes the unresolved tension at the end of a story?', o:['Open ending','Cliffhanger','Deus ex machina','Anagnorisis'], a:0 },
+{ c:'Literature', q:'Who wrote "The Stranger" in 1942 under the French title "L\'أ‰tranger"?', o:['Albert Camus','Jean-Paul Sartre','Simone de Beauvoir','Andrأ© Malraux'], a:0 },
+{ c:'Literature', q:'Which international award is given for a body of work in science fiction?', o:['Hugo Award','Nebula Award','World Fantasy Award','Locus Award'], a:1 },
+{ c:'Literature', q:'What literary technique involves telling a story backwards in time?', o:['Reverse chronology','Analepsis','Prolepsis','In medias res'], a:0 },
+{ c:'Music', q:'What is the opus number of Beethoven\'s Fifth Symphony?', o:['Op. 55','Op. 67','Op. 73','Op. 94'], a:1 },
+{ c:'Music', q:'Which musical form alternates between two contrasting themes as ABA?', o:['Binary form','Rondo form','Ternary form','Sonata form'], a:2 },
+{ c:'Music', q:'What chord progression is standard in Western pop music in C major?', o:['I-V-vi-IV','IV-I-V-vi','vi-IV-I-V','I-IV-V-I'], a:0 },
+{ c:'Music', q:'What is the lowest note on a standard 88-key piano?', o:['A0','B0','C1','A1'], a:0 },
+{ c:'Music', q:'Which musical period roughly spans 1600 to 1750?', o:['Classical','Romantic','Baroque','Medieval'], a:2 },
+{ c:'Music', q:'What time signature is standard for waltz music?', o:['2/4','3/4','4/4','6/8'], a:1 },
+{ c:'Music', q:'Which concept refers to the distance between two pitches?', o:['Timbre','Interval','Dynamics','Tempo'], a:1 },
+{ c:'Music', q:'What is the opus number of Mozart\'s "Eine kleine Nachtmusik"?', o:['Op. 525','Op. 466','Op. 488','Op. 61'], a:0 },
+{ c:'Music', q:'Which musical form is characterized by a theme with variations?', o:['Rondo','Fugue','Theme and variations','Sonata'], a:2 },
+{ c:'Music', q:'What is the enharmonic equivalent of Bâ™¯?', o:['C','Dâ™­','Eâ™­','F'], a:0 },
+{ c:'Music', q:'Which instrument family does the bassoon belong to?', o:['Brass','Woodwind','String','Percussion'], a:1 },
+{ c:'Music', q:'What does the term "allegro" indicate in a tempo marking?', o:['Slow and stately','Fast and lively','Very fast','Moderately'], a:1 },
+{ c:'Music', q:'Which composer wrote "The Four Seasons" as a set of violin concertos?', o:['Vivaldi','Bach','Handel','Corelli'], a:0 },
+{ c:'Music', q:'What chord is built on the dominant tone in C major?', o:['F major','C major','G major','A minor'], a:2 },
+{ c:'Music', q:'Which musical period is known for developments in polyphony?', o:['Renaissance','Classical','Romantic','20th century'], a:0 },
+{ c:'Music', q:'What is the maximum dynamic marking in standard notation?', o:['fff','ffff','sfz','fff+'], a:0 },
+{ c:'Music', q:'Which form is a recurring pattern used in Baroque keyboard music?', o:['Suite','Fugue','Passacaglia','Chaconne'], a:2 },
+{ c:'Music', q:'What scale is commonly used in Indian classical music with seven notes?', o:['Raga','Saptak','Tala','Swara'], a:1 },
+{ c:'Music', q:'Which composer\'s Symphony No. 9 includes "Ode to Joy"?', o:['Beethoven','Mozart','Brahms','Bruckner'], a:0 },
+{ c:'Music', q:'What is the interval between C and G in music theory?', o:['Fourth','Fifth','Octave','Third'], a:1 },
+{ c:'Music', q:'Which musical period emphasized homophony over polyphony?', o:['Baroque','Classical','Renaissance','Medieval'], a:1 },
+{ c:'Music', q:'What term describes a chord with notes played simultaneously?', o:['Arpeggio','Tremolo','Block chord','Broken chord'], a:2 },
+{ c:'Music', q:'Which opera by Verdi premiered in 1853 with the aria "La donna أ¨ mobile"?', o:['Rigoletto','Aida','La Traviata','Otello'], a:0 },
+{ c:'Music', q:'What key signature has five sharps?', o:['D major','A major','B major','E major'], a:2 },
+{ c:'Music', q:'Which form is a strict imitation of a melody in canon?', o:['Stretto','Imitation','Canon','Fugue'], a:2 },
+{ c:'Music', q:'What is the highest note commonly written in the soprano vocal range?', o:['C5','E6','G6','B6'], a:1 },
+{ c:'Music', q:'Which composer pioneered the use of twelve-tone serialism?', o:['Arnold Schoenberg','Igor Stravinsky','Bأ©la Bartأ³k','Dmitri Shostakovich'], a:0 },
+{ c:'Music', q:'What rhythm pattern is "short-short-long"?', o:['Trochaic','Iambic','Dactylic','Anapestic'], a:2 },
+{ c:'Music', q:'Which term describes a gradual increase in volume?', o:['Decrescendo','Crescendo','Diminuendo','Sforzando'], a:1 },
+{ c:'Music', q:'What is the standard tuning interval between guitar strings?', o:['Thirds','Fourths','Fifths','Seconds'], a:1 },
+{ c:'Music', q:'Which Baroque form is a repeating bass pattern over which melodies are improvised?', o:['Passacaglia','Ciaccona','Ground bass','All of the above'], a:3 },
+{ c:'Music', q:'What note is the relative minor of C major?', o:['D minor','E minor','A minor','F minor'], a:2 },
+{ c:'Music', q:'Which instrument was the clavichord most commonly used for?', o:['Church performance','Intimate practice','Orchestral performance','Dance music'], a:1 },
+{ c:'Music', q:'What is the term for a group of four singers in a vocal ensemble?', o:['Trio','Quartet','Quintet','Sextet'], a:1 },
+{ c:'Music', q:'Which composer wrote "The Planets" orchestral suite?', o:['Gustav Holst','Edward Elgar','Ralph Vaughan Williams','Benjamin Britten'], a:0 },
+{ c:'Music', q:'What time signature does a march typically use?', o:['2/4','3/4','6/8','4/4'], a:0 },
+{ c:'Music', q:'Which harmonic concept involves adding non-chord tones for color?', o:['Suspension','Pedal tone','Appoggiatura','Chord substitution'], a:2 },
+{ c:'Music', q:'What is the pedal note in a Baroque organ piece called?', o:['Pedal point','Ground bass','Ostinato','Drone'], a:0 },
+{ c:'Music', q:'Which composer\'s "Brandenburg Concertos" are in G major?', o:['J.S. Bach','Vivaldi','Telemann','Handel'], a:0 },
+{ c:'Music', q:'What does the term "pizzicato" instruct string players to do?', o:['Play on harmonics','Bow rapidly','Pluck the strings','Play legato'], a:2 },
+{ c:'Music', q:'Which key is the parallel minor of D major?', o:['D minor','B minor','G minor','F minor'], a:0 },
+{ c:'Music', q:'What is the standard number of strings on a violin?', o:['4','5','6','8'], a:0 },
+{ c:'Music', q:'Which classical form features a recurring refrain between episodes?', o:['Rondo','Sonata','Fugue','Ternary'], a:0 },
+{ c:'Music', q:'What note is enharmonically equivalent to Eâ™¯?', o:['F','D','G','C'], a:0 },
+{ c:'Music', q:'Which instrument was invented by Adolphe Sax in 1840s?', o:['Trombone','Clarinet','Saxophone','Oboe'], a:2 },
+{ c:'Music', q:'What is the term for music composed for one performer per part?', o:['Chamber music','Solo recital','Concerto','Monody'], a:0 },
+{ c:'Music', q:'Which mode features a flattened third and seventh but natural sixth?', o:['Dorian','Phrygian','Mixolydian','Aeolian'], a:0 },
+{ c:'Music', q:'What is the standard range of a concert grand piano in octaves?', o:['6','7','8','9'], a:1 },
+{ c:'Music', q:'Which Russian composer\'s "Pictures at an Exhibition" uses piano then orchestra?', o:['Mussorgsky','Rachmaninoff','Tchaikovsky','Prokofiev'], a:0 },
+{ c:'Music', q:'What term describes the overall sound quality of a musical instrument?', o:['Dynamics','Pitch','Timbre','Register'], a:2 },
+{ c:'Technology', q:'Which CPU architecture was developed by Acorn Computers in 1985?', o:['ARM','MIPS','SPARC','PowerPC'], a:0 },
+{ c:'Technology', q:'What is the highest normal form in database normalization?', o:['1NF','2NF','3NF','BCNF'], a:3 },
+{ c:'Technology', q:'Which sorting algorithm has worst-case time complexity of O(n log n)?', o:['Bubble sort','Quick sort','Merge sort','Insertion sort'], a:2 },
+{ c:'Technology', q:'What encryption standard replaced DES as the U.S. government standard in 2001?', o:['RSA','Blowfish','AES','Twofish'], a:2 },
+{ c:'Technology', q:'Which port number is commonly used for HTTPS traffic?', o:['80','443','8080','21'], a:1 },
+{ c:'Technology', q:'What software design pattern uses a one-to-many dependency between objects?', o:['Observer','Singleton','Factory','Decorator'], a:0 },
+{ c:'Technology', q:'Which programming language was first used in 1972 for the Unix operating system?', o:['C++','C','Java','Python'], a:1 },
+{ c:'Technology', q:'What is the time complexity of binary search on a sorted array?', o:['O(n)','O(log n)','O(nآ²)','O(1)'], a:1 },
+{ c:'Technology', q:'Which network protocol is used for transferring files securely over SSH?', o:['FTP','SFTP','TFTP','SCP'], a:1 },
+{ c:'Technology', q:'What does the acronym RAM stand for in computing?', o:['Random Access Memory','Read Access Memory','Rapid Access Memory','Real Access Memory'], a:0 },
+{ c:'Technology', q:'Which CPU architecture uses a RISC instruction set?', o:['x86','ARM','IA-64','VAX'], a:1 },
+{ c:'Technology', q:'What database concept ensures that a transaction is all-or-nothing?', o:['Consistency','Isolation','Durability','Atomicity'], a:3 },
+{ c:'Technology', q:'Which sorting algorithm has O(n) average-case time complexity?', o:['Heap sort','Radix sort','Merge sort','Shell sort'], a:1 },
+{ c:'Technology', q:'What is the key size in bits for the AES-128 encryption standard?', o:['64','128','192','256'], a:1 },
+{ c:'Technology', q:'Which port is used by the SSH protocol by default?', o:['22','23','25','80'], a:0 },
+{ c:'Technology', q:'What design pattern provides a simplified interface to a complex subsystem?', o:['Facade','Adapter','Bridge','Proxy'], a:0 },
+{ c:'Technology', q:'Which language was created by Bjarne Stroustrup in 1979?', o:['Java','Python','C++','Ruby'], a:2 },
+{ c:'Technology', q:'What data structure uses FIFO ordering for operations?', o:['Stack','Queue','Heap','Tree'], a:1 },
+{ c:'Technology', q:'Which networking layer in the OSI model handles routing?', o:['Physical','Data link','Network','Transport'], a:2 },
+{ c:'Technology', q:'What does DNS primarily resolve?', o:['IP addresses to MAC addresses','Domain names to IP addresses','URLs to domains','Ports to services'], a:1 },
+{ c:'Technology', q:'Which design pattern restricts instantiation of a class to one object?', o:['Singleton','Prototype','Factory','Builder'], a:0 },
+{ c:'Technology', q:'What year was the Python programming language first released?', o:['1989','1991','1995','2000'], a:1 },
+{ c:'Technology', q:'Which protocol operates at the transport layer of the OSI model?', o:['TCP','IP','ARP','HTTP'], a:0 },
+{ c:'Technology', q:'What is the worst-case time complexity of bubble sort?', o:['O(n)','O(n log n)','O(nآ²)','O(log n)'], a:2 },
+{ c:'Technology', q:'Which type of database uses key-value pairs for data storage?', o:['Relational','Graph','Document','Key-value'], a:3 },
+{ c:'Technology', q:'What encryption algorithm is used in SSL/TLS certificates?', o:['RSA','DES','MD5','SHA-1'], a:0 },
+{ c:'Technology', q:'Which port is used for FTP data transfer by default?', o:['20','21','25','80'], a:0 },
+{ c:'Technology', q:'What design pattern dynamically adds responsibilities to objects?', o:['Decorator','Composite','Flyweight','Proxy'], a:0 },
+{ c:'Technology', q:'Which programming language was developed by Guido van Rossum?', o:['Perl','Python','Ruby','PHP'], a:1 },
+{ c:'Technology', q:'What data structure is used to implement a priority queue?', o:['Stack','Array','Heap','Linked list'], a:2 },
+{ c:'Technology', q:'Which networking protocol is connectionless?', o:['TCP','UDP','SCTP','RUDP'], a:1 },
+{ c:'Technology', q:'What is the primary purpose of the ARP protocol?', o:['Route packets','Resolve IP to MAC','Encrypt data','Manage DNS'], a:1 },
+{ c:'Technology', q:'Which design pattern uses inheritance to derive classes from a base?', o:['Inheritance','Strategy','Template method','Both a and c'], a:3 },
+{ c:'Technology', q:'What does ACID stand for in database management?', o:['Atomicity, Consistency, Isolation, Durability','Association, Consistency, Integration, Durability','All of the above','None'], a:0 },
+{ c:'Technology', q:'Which port is used by SMTP for email transmission?', o:['110','25','143','993'], a:1 },
+{ c:'Technology', q:'What is the time complexity of inserting into a binary search tree?', o:['O(1)','O(log n)','O(n)','O(n log n)'], a:1 },
+{ c:'Technology', q:'Which computer architecture uses a Harvard cache model?', o:['Von Neumann','Harvard','Modified Harvard','Neumann'], a:1 },
+{ c:'Technology', q:'What is the maximum value an 8-bit unsigned integer can hold?', o:['127','128','255','256'], a:2 },
+{ c:'Technology', q:'Which protocol is used for securely accessing remote servers via command line?', o:['Telnet','SSH','HTTP','SNMP'], a:1 },
+{ c:'Technology', q:'What year was the first version of the Java programming language released?', o:['1993','1995','1997','2000'], a:1 },
+{ c:'Technology', q:'Which sorting algorithm is not a comparison-based sort?', o:['Quick sort','Merge sort','Counting sort','Heap sort'], a:2 },
+{ c:'Technology', q:'What does the acronym GPU stand for?', o:['General Processing Unit','Graphics Processing Unit','Graphical Processing Unit','General Purpose Unit'], a:1 },
+{ c:'Technology', q:'Which design pattern wraps an interface to make it compatible with another?', o:['Adapter','Facade','Decorator','Proxy'], a:0 },
+{ c:'Technology', q:'What is the standard port for HTTPS traffic?', o:['80','8080','443','21'], a:2 },
+{ c:'Technology', q:'Which data structure uses LIFO ordering for operations?', o:['Queue','Stack','Tree','Graph'], a:1 },
+{ c:'Technology', q:'What networking protocol is used to assign IP addresses automatically?', o:['DNS','DHCP','FTP','SMTP'], a:1 },
+{ c:'Technology', q:'Which computer language is primarily used for web page styling?', o:['HTML','JavaScript','CSS','XML'], a:2 },
+{ c:'Technology', q:'What does RAID stand for in storage technology?', o:['Redundant Array of Independent Disks','Random Access Independent Disk','Rapid Array of Internal Drives','Reliable Array of Integrated Disks'], a:0 },
+{ c:'Technology', q:'Which port number is assigned to Telnet by default?', o:['22','23','25','80'], a:1 },
+{ c:'Technology', q:'What is the average time complexity of hash table lookups?', o:['O(n)','O(log n)','O(1)','O(nآ²)'], a:2 },
+{ c:'Biology', q:'Which enzyme catalyzes the conversion of pyruvate to acetyl-CoA?', o:['Pyruvate dehydrogenase','Citrate synthase','Malate dehydrogenase','Isocitrate dehydrogenase'], a:0 },
+{ c:'Biology', q:'What is the term for the signaling pathway involving cyclic AMP?', o:['MAPK pathway','cAMP pathway','Wnt pathway','Notch pathway'], a:1 },
+{ c:'Biology', q:'Which term describes a segment of DNA encoding a functional RNA or protein?', o:['Promoter','Gene','Operon','Exon'], a:1 },
+{ c:'Biology', q:'What is the primary photosynthetic pigment in plants absorbing blue-red light?', o:['Chlorophyll a','Chlorophyll b','Carotenoid','Phycocyanin'], a:0 },
+{ c:'Biology', q:'Which bacterial species causes tuberculosis in humans?', o:['E. coli','Mycobacterium tuberculosis','S. aureus','Salmonella'], a:1 },
+{ c:'Biology', q:'What is the term for ecological niches filled by different species in a habitat?', o:['Competitive exclusion','Resource partitioning','Niche overlap','Character displacement'], a:1 },
+{ c:'Biology', q:'Which evolutionary mechanism involves the passing of traits not based on DNA?', o:['Natural selection','Genetic drift','Epigenetics','Gene flow'], a:2 },
+{ c:'Biology', q:'What protein transports oxygen in muscle tissue?', o:['Hemoglobin','Myoglobin','Transferrin','Ferritin'], a:1 },
+{ c:'Biology', q:'Which enzyme unwinds DNA during replication by breaking hydrogen bonds?', o:['DNA polymerase','Helicase','Ligase','Primase'], a:1 },
+{ c:'Biology', q:'What is the term for a symbiotic relationship where both species benefit?', o:['Mutualism','Commensalism','Parasitism','Amensalism'], a:0 },
+{ c:'Biology', q:'Which amino acid is coded by the codon AUG in translation initiation?', o:['Methionine','Leucine','Alanine','Serine'], a:0 },
+{ c:'Biology', q:'What is the primary function of the Krebs cycle in cellular respiration?', o:['ATP production','NADH and FADHâ‚‚ generation','Glycolysis','Oxygen consumption'], a:1 },
+{ c:'Biology', q:'Which type of RNA carries amino acids to the ribosome during translation?', o:['mRNA','rRNA','tRNA','snRNA'], a:2 },
+{ c:'Biology', q:'What is the term for a population bottleneck caused by sampling error in small populations?', o:['Genetic drift','Founder effect','Bottleneck effect','Inbreeding'], a:1 },
+{ c:'Biology', q:'Which plant hormone promotes cell elongation in response to light?', o:['Auxin','Cytokinin','Gibberellin','Ethylene'], a:0 },
+{ c:'Biology', q:'What is the name for the junction between two cardiac muscle cells?', o:['Desmosome','Gap junction','Tight junction','Hemidesmosome'], a:1 },
+{ c:'Biology', q:'Which enzyme breaks down starch into maltose in human saliva?', o:['Pepsin','Amylase','Lipase','Trypsin'], a:1 },
+{ c:'Biology', q:'What is the term for the evolutionary convergence of similar traits in unrelated species?', o:['Convergent evolution','Divergent evolution','Parallel evolution','Coevolution'], a:0 },
+{ c:'Biology', q:'Which organelle is primarily responsible for lipid synthesis in eukaryotes?', o:['Golgi apparatus','Smooth ER','Rough ER','Lysosome'], a:1 },
+{ c:'Biology', q:'What is the term for aهں؛ه› çھپهڈک that changes a single nucleotide base pair?', o:['Frameshift mutation','Point mutation','Deletion','Insertion'], a:1 },
+{ c:'Biology', q:'Which specialized cell type produces myelin in the peripheral nervous system?', o:['Astrocytes','Oligodendrocytes','Schwann cells','Microglia'], a:2 },
+{ c:'Biology', q:'What is the primary ecological role of decomposers in a food web?', o:['Primary production','Nutrient cycling','Predation','Pollination'], a:1 },
+{ c:'Biology', q:'Which DNA repair mechanism corrects errors using an undamaged strand as template?', o:['Base excision repair','Mismatch repair','Nucleotide excision repair','Homologous recombination'], a:1 },
+{ c:'Biology', q:'What is the term for the sex-determination system in birds with ZW chromosomes?', o:['XY system','ZW system','Haplodiploidy','XO system'], a:1 },
+{ c:'Biology', q:'Which human chromosome contains the dystrophin gene?', o:['Chromosome 1','Chromosome 11','Chromosome 21','Chromosome X'], a:3 },
+{ c:'Biology', q:'What is the term for the loss of genetic variation when a new colony is established?', o:['Genetic drift','Founder effect','Bottleneck effect','Inbreeding depression'], a:1 },
+{ c:'Biology', q:'Which enzyme synthesizes RNA from a DNA template during transcription?', o:['DNA polymerase','RNA polymerase','Reverse transcriptase','Primase'], a:1 },
+{ c:'Biology', q:'What type of immunity involves the production of antibodies by B cells?', o:['Cell-mediated immunity','Humoral immunity','Innate immunity','Passive immunity'], a:1 },
+{ c:'Biology', q:'Which ecological term describes the maximum population size an environment can sustain?', o:['Carrying capacity','Biotic potential','Population density','Growth rate'], a:0 },
+{ c:'Biology', q:'What is the name of the enzyme that seals Okazaki fragments during DNA replication?', o:['Helicase','Ligase','Primase','Topoisomerase'], a:1 },
+{ c:'Biology', q:'Which plant organ system is primarily responsible for photosynthesis?', o:['Root system','Shoot system','Storage organs','Vascular system'], a:1 },
+{ c:'Biology', q:'What is the term for the simultaneous inheritance of unlinked genes independently?', o:['Linkage','Independent assortment','Codominance','Incomplete dominance'], a:1 },
+{ c:'Biology', q:'Which neurotransmitter is primarily associated with mood regulation and sleep?', o:['Dopamine','Serotonin','GABA','Acetylcholine'], a:1 },
+{ c:'Biology', q:'What is the term for the coevolution of species in predator-prey relationships?', o:['Arms race','Mimicry','Coevolution','Adaptive radiation'], a:0 },
+{ c:'Biology', q:'Which cell cycle checkpoint ensures DNA replication is complete before mitosis?', o:['G1 checkpoint','G2 checkpoint','M checkpoint','S checkpoint'], a:1 },
+{ c:'Biology', q:'What protein complex is responsible for the breakdown of cyclins in mitosis?', o:['Proteasome','Cyclin-dependent kinase','Anaphase-promoting complex',' APC/C'], a:3 },
+{ c:'Biology', q:'Which type of selection favors intermediate phenotypes over extremes?', o:['Directional selection','Stabilizing selection','Disruptive selection','Balancing selection'], a:1 },
+{ c:'Biology', q:'What is the term for a gene that influences multiple phenotypic traits?', o:['Polygenic trait','Pleiotropy','Epistasis','Multifactorial'], a:1 },
+{ c:'Biology', q:'Which microbial organism is used in the production of bread and beer?', o:['Saccharomyces cerevisiae','Escherichia coli','Lactobacillus','Bacillus subtilis'], a:0 },
+{ c:'Biology', q:'What is the term for the physical separation of homologous chromosomes in meiosis?', o:['Crossing over','Independent assortment','Segregation','Synapsis'], a:2 },
+{ c:'Biology', q:'Which hormone regulates blood glucose levels by promoting cellular uptake?', o:['Glucagon','Insulin','Cortisol','Adrenaline'], a:1 },
+{ c:'Biology', q:'What type of RNA catalyzes peptide bond formation in ribosomes?', o:['mRNA','tRNA','rRNA','snRNA'], a:2 },
+{ c:'Biology', q:'Which cellular structure is the site of ATP synthesis via oxidative phosphorylation?', o:['Golgi apparatus','Mitochondria','Chloroplast','Endoplasmic reticulum'], a:1 },
+{ c:'Biology', q:'What is the term for the ability of a species to maintain constant internal conditions?', o:['Homeostasis','Homeorhesis','Adaptation','Thermoregulation'], a:0 },
+{ c:'Biology', q:'Which type of symbiosis benefits one organism while harming the other?', o:['Mutualism','Commensalism','Parasitism','Amensalism'], a:2 },
+{ c:'Biology', q:'What is the term for the genetic diversity within a population measured by allele frequencies?', o:['Genetic diversity','Species diversity','Biodiversity','Ecosystem diversity'], a:0 },
+{ c:'Biology', q:'Which protein family is responsible for the transport of glucose across cell membranes?', o:['Glucose transporters (GLUTs)','Ion channels','Aquaporins','Sodium-potassium pumps'], a:0 },
+{ c:'Biology', q:'What is the term for the overlap of species ranges in different biogeographical regions?', o:['Range overlap','Sympatry','Allopatry','Vicariance'], a:0 },
+{ c:'Biology', q:'Which cellular process converts light energy into chemical energy in plants?', o:['Respiration','Fermentation','Photosynthesis','Chemosynthesis'], a:2 },
+{ c:'Biology', q:'What is the term for a segment of non-coding DNA that regulates gene expression?', o:['Intron','Exon','Enhancer','Promoter'], a:2 },
+{ c:'Mathematics', q:'Which theorem states that aآ² + bآ² = cآ² for right triangles?', o:['Pythagorean theorem','Fermat\'s Last Theorem','Euler\'s theorem','Lagrange\'s theorem'], a:0 },
+{ c:'Mathematics', q:'What is the value of the mathematical constant e to three decimal places?', o:['2.718','3.142','1.618','1.414'], a:0 },
+{ c:'Mathematics', q:'Which curve is defined by the equation xآ² + yآ² = rآ²?', o:['Ellipse','Circle','Parabola','Hyperbola'], a:1 },
+{ c:'Mathematics', q:'What topological property describes a space that cannot be continuously deformed into another?', o:['Homeomorphism','Homotopy','Genus','Euler characteristic'], a:0 },
+{ c:'Mathematics', q:'Which inequality states that (a+b)/2 â‰¥ âˆڑ(ab) for positive numbers?', o:['Arithmetic-geometric mean inequality','Cauchy-Schwarz','Triangle inequality','Jensen\'s inequality'], a:0 },
+{ c:'Mathematics', q:'What proof technique assumes the negation of what is to be proved and derives a contradiction?', o:['Direct proof','Induction','Proof by contradiction','Contrapositive'], a:2 },
+{ c:'Mathematics', q:'Which group theory concept describes a subgroup preserved under conjugation?', o:['Normal subgroup','Maximal subgroup','Cyclic subgroup','Abelian subgroup'], a:0 },
+{ c:'Mathematics', q:'What is the largest known Mersenne prime exponent as of 2025?', o:['82,589,933','77,232,917','57,885,161','43,112,609'], a:0 },
+{ c:'Mathematics', q:'Which function counts the number of prime numbers less than a given integer?', o:['Totient function','Prime-counting function','Euler function','Stirling number'], a:1 },
+{ c:'Mathematics', q:'What is the term for a matrix that equals its own transpose?', o:['Symmetric matrix','Skew-symmetric matrix','Idempotent matrix','Orthogonal matrix'], a:0 },
+{ c:'Mathematics', q:'Which famous conjecture was proved by Andrew Wiles in 1995?', o:['Goldbach conjecture','Fermat\'s Last Theorem','Poincarأ© conjecture','Twin prime conjecture'], a:1 },
+{ c:'Mathematics', q:'What is the Fibonacci number at position F(10)?', o:['34','55','89','144'], a:1 },
+{ c:'Mathematics', q:'Which curve has the parametric equations x = cosآ³t, y = sinآ³t?', o:['Astroid','Cardioid','Lemniscate','Cycloid'], a:0 },
+{ c:'Mathematics', q:'What is the dimension of the real projective plane in topology?', o:['1','2','3','4'], a:1 },
+{ c:'Mathematics', q:'Which theorem relates the number of edges, vertices, and faces in a polyhedron?', o:['Euler\'s formula','Fermat\'s theorem','Ramsey\'s theorem','Noether\'s theorem'], a:0 },
+{ c:'Mathematics', q:'What type of proof uses mathematical induction to prove a statement for all natural numbers?', o:['Weak induction','Strong induction','Structural induction','Transfinite induction'], a:0 },
+{ c:'Mathematics', q:'Which algebraic structure consists of a set with a binary operation satisfying closure, associativity, identity, and inverses?', o:['Monoid','Group','Ring','Field'], a:1 },
+{ c:'Mathematics', q:'What is the decimal expansion of 1/7?', o:['0.142857142857...','0.166666...','0.125','0.2'], a:0 },
+{ c:'Mathematics', q:'Which named inequality states that |a+b| â‰¤ |a|+|b|?', o:['Triangle inequality','AM-GM inequality','Cauchy-Schwarz','Jensen\'s inequality'], a:0 },
+{ c:'Mathematics', q:'What is the genus of a torus (doughnut shape) in topology?', o:['0','1','2','3'], a:1 },
+{ c:'Mathematics', q:'Which combinatorial object counts the number of ways to partition a set?', o:['Bell numbers','Catalan numbers','Fibonacci numbers','Partition function'], a:0 },
+{ c:'Mathematics', q:'What is the name of the function that counts the number of divisors of n?', o:['Totient function','Divisor function','Partition function','Mobius function'], a:1 },
+{ c:'Mathematics', q:'Which test determines if an infinite series converges by comparing to another series?', o:['Ratio test','Root test','Comparison test','Integral test'], a:2 },
+{ c:'Mathematics', q:'What is the probability that two random integers are coprime?', o:['6/د€آ²','1/د€','6/د€','1/د€آ²'], a:0 },
+{ c:'Mathematics', q:'Which curve is the envelope of a family of circles with centers on a line?', o:['Cycloid','Cardioid','Caustic','Parabola'], a:0 },
+{ c:'Mathematics', q:'What is the term for a surface that has no boundary and is orientable?', o:['Manifold','Non-orientable surface','Closed surface','Simply connected'], a:2 },
+{ c:'Mathematics', q:'Which theorem states that every prime of form 4k+1 is a sum of two squares?', o:['Fermat\'s theorem on sums of two squares','Fermat\'s little theorem','Wilson\'s theorem','Euler\'s theorem'], a:0 },
+{ c:'Mathematics', q:'What is the value of the Riemann zeta function at s = 2?', o:['د€آ²/6','د€آ²/12','د€/4','د€آ²/8'], a:0 },
+{ c:'Mathematics', q:'Which group theory concept describes a map preserving the group operation?', o:['Homomorphism','Isomorphism','Automorphism','Endomorphism'], a:0 },
+{ c:'Mathematics', q:'What is the name of the iterative method for finding square roots by successive approximations?', o:['Babylonian method','Newton\'s method','Gauss-Seidel','Regula falsi'], a:0 },
+{ c:'Mathematics', q:'Which theorem gives the number of Eulerian paths in a graph?', o:['Euler\'s path theorem','Hamilton\'s theorem','Fermat\'s theorem','Noether\'s theorem'], a:0 },
+{ c:'Mathematics', q:'What is the term for a set with no elements?', o:['Singleton set','Empty set','Universal set','Power set'], a:1 },
+{ c:'Mathematics', q:'Which named series converges to د€/4?', o:['Leibniz series','Basel problem','Harmonic series','Geometric series'], a:0 },
+{ c:'Mathematics', q:'What is the Euler characteristic of a sphere?', o:['0','1','2','3'], a:2 },
+{ c:'Mathematics', q:'Which inequality involves the expectation of a convex function of a random variable?', o:['Jensen\'s inequality','Chebyshev\'s inequality','Markov\'s inequality','Cauchy-Schwarz'], a:0 },
+{ c:'Mathematics', q:'What is the name of the field of mathematics studying the properties of prime numbers?', o:['Combinatorics','Number theory','Graph theory','Topology'], a:1 },
+{ c:'Mathematics', q:'Which group theory concept describes a group acting on itself by conjugation?', o:['Inner automorphism','Outer automorphism','Transitive action','Faithful action'], a:0 },
+{ c:'Mathematics', q:'What is the name for the process of assigning values to variables to make a formula true?', o:['Substitution','Unification','Evaluation','Assignment'], a:0 },
+{ c:'Mathematics', q:'Which theorem guarantees a polynomial has at least one complex root?', o:['Fundamental theorem of algebra','Rouche\'s theorem','Liouville\'s theorem','Cauchy\'s theorem'], a:0 },
+{ c:'Mathematics', q:'What is the name of the curve traced by a point on the rim of a rolling circle?', o:['Cycloid','Involute','Catenary','Epicycloid'], a:0 },
+{ c:'Mathematics', q:'Which concept in topology describes a property preserved under continuous deformation?', o:['Topological invariant','Homomorphism','Isomorphism','Diffeomorphism'], a:0 },
+{ c:'Mathematics', q:'What is the value of the Catalan number C(5)?', o:['14','42','132','429'], a:2 },
+{ c:'Mathematics', q:'Which theorem states that any finite group of prime order is cyclic?', o:['Lagrange\'s theorem converse','Cauchy\'s theorem','Sylow theorem','Lagrange\'s theorem'], a:0 },
+{ c:'Mathematics', q:'What is the name for the set of all limit points of a topological space?', o:['Boundary','Closure','Interior','Derived set'], a:3 },
+{ c:'Mathematics', q:'Which integral represents the Gaussian integral âˆ«e^(-xآ²)dx from -âˆ‍ to âˆ‍?', o:['âˆڑد€','د€','د€/2','âˆڑ(د€/2)'], a:0 },
+{ c:'Mathematics', q:'What is the maximum number of edges in a simple graph with n vertices?', o:['n','n(n-1)/2','nآ²','n-1'], a:1 },
+{ c:'Mathematics', q:'Which algebraic concept defines a set closed under addition and multiplication?', o:['Ring','Group','Field','Lattice'], a:0 },
+{ c:'Mathematics', q:'What is the name of the theorem that generalizes the Pythagorean theorem to n dimensions?', o:['Law of cosines','Parseval\'s theorem','Generalized Pythagorean theorem','Apollonius theorem'], a:2 },
+{ c:'Mathematics', q:'Which named curve is the locus of a point on a string being unwound from a circle?', o:['Cycloid','Involute of a circle','Catenary','Lemniscate'], a:1 },
+{ c:'Mathematics', q:'What is the term for a partition of a set into non-empty disjoint subsets?', o:['Composition','Equivalence relation','Partition','Surjection'], a:2 }
+];
+var BANK=BANK_RAW.map(function(r){return{c:r.c,q:r.q,o:r.o,a:r.a}});
+var CATS={};BANK.forEach(function(q){if(!CATS[q.c])CATS[q.c]=0;CATS[q.c]++});
+var catNames=Object.keys(CATS).sort();
+var selCats={};
+var quiz=[],qi=0,score=0,answered=false,timerInterval=null,timeLeft=0,totalTime=0,startTime=0,dispOrder=[];
+
+/* ===== AUDIO ENGINE (music only) ===== */
+var audioCtx=null,musicOn=true,musicGain=null,musicTimer=null,musicStep=0,musicNextTime=0;
+var RELAX=[261.63,329.63,392,440,523.25,659.25,523.25,440,392,329.63,293.66,261.63,329.63,392,523.25,659.25,783.99,659.25,523.25,392,440,392,329.63,293.66];
+var RELAXBASS=[130.81,130.81,130.81,130.81,98,98,98,98,130.81,130.81,146.83,146.83,174.61,174.61,196,196,220,220,196,196,130.81,130.81,98,98];
+function ensureAudio(){if(audioCtx)return true;try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return false}return !!audioCtx}
+function loadSettings(){var ms=localStorage.getItem('ql_music');if(ms!==null)musicOn=ms==='1';var mv=localStorage.getItem('ql_musicvol');if(mv!==null)document.getElementById('musicVol').value=mv}
+function saveSettings(){localStorage.setItem('ql_music',musicOn?'1':'0');localStorage.setItem('ql_musicvol',document.getElementById('musicVol').value)}
+function toggleMusic(){if(!ensureAudio()){alert('Audio not supported in this browser');return}musicOn=!musicOn;updateMusicBtns();saveSettings();if(musicOn)startMusic();else stopMusic()}
+function updateMusicBtns(){var mb=document.getElementById('musicBtn');if(musicOn){mb.textContent='🎵';mb.classList.remove('off');mb.classList.add('on')}else{mb.textContent='🔇';mb.classList.add('off');mb.classList.remove('on')}}
+function toggleVoicePop(){var vp=document.getElementById('voicePop');vp.classList.toggle('visible')}
+function stopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}if(musicGain){musicGain.disconnect();musicGain=null}}
+function startMusic(){if(!audioCtx||!musicOn)return;if(musicGain)return;musicGain=audioCtx.createGain();musicGain.gain.value=parseFloat(document.getElementById('musicVol').value);musicGain.connect(audioCtx.destination);musicStep=0;musicNextTime=audioCtx.currentTime+0.1;scheduleNotes();musicTimer=setInterval(scheduleNotes,26)}
+function scheduleNotes(){var lead=audioCtx.currentTime+0.7;while(musicNextTime<lead){if(musicStep%24===0){var b=audioCtx.createGain();b.gain.setValueAtTime(0.0001,musicNextTime);b.gain.linearRampToValueAtTime(0.5,musicNextTime+0.08);b.gain.exponentialRampToValueAtTime(0.0001,musicNextTime+1.4);var bo=audioCtx.createOscillator();bo.type='sine';bo.frequency.value=RELAXBASS[musicStep%24];bo.connect(b);b.connect(musicGain);bo.start(musicNextTime);bo.stop(musicNextTime+1.5)}
+var freq=RELAX[musicStep%24];var osc=audioCtx.createOscillator();osc.type='triangle';osc.frequency.value=freq;var g=audioCtx.createGain();g.gain.setValueAtTime(0.0001,musicNextTime);g.gain.linearRampToValueAtTime(0.45,musicNextTime+0.12);g.gain.exponentialRampToValueAtTime(0.0001,musicNextTime+1.0);var vib=audioCtx.createOscillator();vib.frequency.value=5;var vibG=audioCtx.createGain();vibG.gain.value=3;osc.frequency.connect(vibG);vib.connect(vibG);vibG.connect(osc.frequency);osc.connect(g);g.connect(musicGain);vib.start(musicNextTime);vib.stop(musicNextTime+1.05);osc.start(musicNextTime);osc.stop(musicNextTime+1.05);musicNextTime+=0.27}}
+function bindAudio(){updateMusicBtns();var mb=document.getElementById('musicBtn');mb.onclick=toggleMusic;document.getElementById('musicVol').oninput=function(){saveSettings();if(musicGain)musicGain.gain.value=parseFloat(this.value)};document.addEventListener('click',function one(){if(ensureAudio()&&audioCtx.state==='suspended')audioCtx.resume();document.removeEventListener('click',one)},true)}
+
+function showPage(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById(id).classList.add('active');if(id==='pLanding')initLanding()}
+function initLanding(){document.getElementById('totalQ').textContent=BANK.length;document.getElementById('totalC').textContent=catNames.length;var hs=parseInt(localStorage.getItem('ql_hs')||'0');document.getElementById('totalHS').textContent=hs}
+
+function buildCategories(){var g=document.getElementById('catGrid');g.innerHTML='';
+var all=document.createElement('div');all.className='cat-card selected';all.innerHTML='<div class="cat-name">All Categories</div><div class="cat-count">'+BANK.length+' questions</div>';all.onclick=function(){selCats={};document.querySelectorAll('.cat-card').forEach(function(c){c.classList.remove('selected')});all.classList.add('selected');document.getElementById('startFromCat').style.display=''};g.appendChild(all);
+var rnd=document.createElement('div');rnd.className='cat-card';rnd.innerHTML='<div class="cat-name">🎲 Random Mix</div><div class="cat-count">'+BANK.length+' questions</div>';rnd.onclick=function(){selCats={'__random__':1};document.querySelectorAll('.cat-card').forEach(function(c){c.classList.remove('selected')});rnd.classList.add('selected');document.getElementById('startFromCat').style.display=''};g.appendChild(rnd);
+catNames.forEach(function(name){var c=document.createElement('div');c.className='cat-card';c.innerHTML='<div class="cat-name">'+name+'</div><div class="cat-count">'+CATS[name]+' questions</div>';c.onclick=function(){delete selCats['__random__'];all.classList.remove('selected');rnd.classList.remove('selected');if(selCats[name]){delete selCats[name];c.classList.remove('selected')}else{selCats[name]=1;c.classList.add('selected')}document.getElementById('startFromCat').style.display=Object.keys(selCats).length?'':'none'};g.appendChild(c)});
+document.getElementById('startFromCat').style.display='none'}
+
+function startQuiz(){if(ensureAudio()&&audioCtx.state==='suspended')audioCtx.resume();startMusic();var pool=[];if(selCats['__random__']||Object.keys(selCats).length===0){pool=BANK.slice()}else{BANK.forEach(function(q){if(selCats[q.c])pool.push(q)})}pool=shuffle(pool);var count=parseInt(document.getElementById('sCount').value);if(count===0)count=pool.length;quiz=pool.slice(0,count);qi=0;score=0;answered=false;totalTime=0;startTime=Date.now();showPage('pQuiz');showQuestion()}
+
+function showAnswered(isCorrect,correctIdx){
+  var opts=document.querySelectorAll('.option');
+  opts.forEach(function(o,i){
+    o.classList.add('disabled');
+    if(i===correctIdx)o.classList.add('correct');
+    if(isCorrect===false&&o.dataset.idx===(undefined)){}
+  });
+}
+
+function showQuestion(){if(qi>=quiz.length){showResults();return}answered=false;var q=quiz[qi];document.getElementById('qCounter').textContent='Q '+(qi+1)+' / '+quiz.length;document.getElementById('qScore').textContent=score+' ✓';document.getElementById('qCategory').textContent=q.c;document.getElementById('qText').textContent=q.q;document.getElementById('progressFill').style.width=((qi/quiz.length)*100)+'%';
+var ob=document.getElementById('optionsBox');ob.innerHTML='';var letters=['A','B','C','D'];dispOrder=[];for(var i=0;i<q.o.length;i++)dispOrder.push(i);for(var i=dispOrder.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=dispOrder[i];dispOrder[i]=dispOrder[j];dispOrder[j]=t}dispOrder.forEach(function(orig,i){var d=document.createElement('div');d.className='option';d.dataset.idx=i;d.dataset.orig=orig;d.innerHTML='<div class="letter">'+letters[i]+'</div><div>'+q.o[orig]+'</div>';d.onclick=function(){selectAnswer(i)};ob.appendChild(d)});
+var timer=parseInt(document.getElementById('sTimer').value);if(timer>0){timeLeft=timer;updateTimerDisplay();clearInterval(timerInterval);timerInterval=setInterval(function(){timeLeft--;updateTimerDisplay();if(timeLeft<=0){clearInterval(timerInterval);autoReveal()}},1000)}else{document.getElementById('timerText').textContent='∞';document.getElementById('timerFg').style.strokeDashoffset='0';document.getElementById('timerRing').classList.remove('urgent')}}
+
+function updateTimerDisplay(){var timer=parseInt(document.getElementById('sTimer').value);document.getElementById('timerText').textContent=timeLeft;var circ=131.95;var pct=timer>0?timeLeft/timer:1;document.getElementById('timerFg').style.strokeDashoffset=circ*(1-pct);var ring=document.getElementById('timerRing');if(timeLeft<=5&&timer>0)ring.classList.add('urgent');else ring.classList.remove('urgent')}
+
+function selectAnswer(idx){if(answered)return;answered=true;clearInterval(timerInterval);var q=quiz[qi];var chosenOrig=parseInt(document.querySelectorAll('.option')[idx].dataset.orig);var correct=chosenOrig===q.a;if(correct){score++}var opts=document.querySelectorAll('.option');opts.forEach(function(o,i){o.classList.add('disabled');if(parseInt(o.dataset.orig)===q.a)o.classList.add('correct');if(i===idx&&!correct)o.classList.add('wrong')});setTimeout(function(){qi++;showQuestion()},1400)}
+
+function autoReveal(){if(answered)return;answered=true;var q=quiz[qi];var opts=document.querySelectorAll('.option');opts.forEach(function(o){o.classList.add('disabled');if(parseInt(o.dataset.orig)===q.a)o.classList.add('correct')});setTimeout(function(){qi++;showQuestion()},1400)}
+
+function showResults(){clearInterval(timerInterval);totalTime=Math.round((Date.now()-startTime)/1000);var pct=Math.round((score/quiz.length)*100);document.getElementById('rScore').textContent=score+'/'+quiz.length;document.getElementById('rPct').textContent=pct+'%';document.getElementById('rCorrect').textContent=score;document.getElementById('rWrong').textContent=quiz.length-score;document.getElementById('rTime').textContent=formatTime(totalTime);
+var msg='Keep practicing!';if(pct>=90)msg='Outstanding! You are a genius!';else if(pct>=70)msg='Great job! Well done!';else if(pct>=50)msg='Not bad! Keep going!';else if(pct>=30)msg='Nice try! Practice makes perfect!';document.getElementById('rMsg').textContent=msg;
+var hs=parseInt(localStorage.getItem('ql_hs')||'0');if(score>hs){localStorage.setItem('ql_hs',String(score));hs=score}
+var rl=document.getElementById('reviewList');rl.innerHTML='<div style="font-weight:700;margin-bottom:8px;font-size:14px">Review</div>';quiz.forEach(function(q,i){var letters=['A','B','C','D'];var d=document.createElement('div');d.className='review-item review-correct';d.innerHTML='<div class="review-q">'+(i+1)+'. '+q.q+'</div><div class="review-a">Answer: <span>'+letters[q.a]+') '+q.o[q.a]+'</span></div>';rl.appendChild(d)});
+showPage('pResults')}
+
+function shareResult(){var txt='Wonderingland: '+score+'/'+quiz.length+' ('+Math.round(score/quiz.length*100)+'%) across '+quiz.length+' questions!';if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){alert('Copied to clipboard!')})}else{prompt('Copy this:',txt)}}
+
+function formatTime(s){if(s<60)return s+'s';return Math.floor(s/60)+'m '+s%60+'s'}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+document.addEventListener('keydown',function(e){if(!document.getElementById('pQuiz').classList.contains('active'))return;if(answered)return;var map={1:0,2:1,3:2,4:3};if(e.key in map)selectAnswer(map[e.key])});
+
+buildCategories();initLanding();loadSettings();bindAudio();
+</script>
+</body>
+</html>
