@@ -101,6 +101,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .voice-pop select,.voice-pop input[type=range]{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-size:13px;font-family:inherit;outline:none}
 .voice-pop select{height:32px}
 @keyframes pulseVolume{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.lang-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;font-family:inherit;padding:3px 6px;border-radius:6px}
+.lang-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.lang-btn.active{background:rgba(108,92,231,.2);color:var(--violet);font-weight:700}
+.lang-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.translating{opacity:.6;font-style:italic;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:.6}50%{opacity:.25}}
+html[dir=rtl] .back-btn{flex-direction:row-reverse}
+html[dir=rtl] .option:hover:not(.disabled){transform:translateX(-4px)}
+html[dir=rtl] .q-counter{direction:ltr}
+html[dir=rtl] .hero-title{background:linear-gradient(135deg,#ec4899,#a855f7,#6c5ce7,#f43f5e);background-size:300% 300%;animation:gradientShift 4s ease infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 </style>
 </head>
 <body>
@@ -115,25 +125,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
     <div class="floating" style="top:40%;left:5%;animation-delay:1.5s;font-size:30px">Q</div>
     <div class="floating" style="top:30%;right:8%;animation-delay:2.5s;font-size:50px">A</div>
     <div class="hero-title">Wonderingland</div>
-    <div class="hero-sub">Test your knowledge across 25+ categories with over 1000 hard questions</div>
+<div class="hero-sub" id="heroSub" data-i18n="heroSub">Test your knowledge across 25+ categories with over 1000 hard questions</div>
     <div class="stats-row">
-      <div class="stat"><div class="stat-num" id="totalQ">0</div><div class="stat-label">Questions</div></div>
-      <div class="stat"><div class="stat-num" id="totalC">0</div><div class="stat-label">Categories</div></div>
-      <div class="stat"><div class="stat-num" id="totalHS">0</div><div class="stat-label">High Score</div></div>
+      <div class="stat"><div class="stat-num" id="totalQ">0</div><div class="stat-label" data-i18n="questions">Questions</div></div>
+      <div class="stat"><div class="stat-num" id="totalC">0</div><div class="stat-label" data-i18n="categories">Categories</div></div>
+      <div class="stat"><div class="stat-num" id="totalHS">0</div><div class="stat-label" data-i18n="highScore">High Score</div></div>
     </div>
-    <button class="btn btn-primary" onclick="showPage('pCategory')">Start Playing</button>
+    <button class="btn btn-primary" id="heroPlayBtn" onclick="showPage('pCategory')" data-i18n="startPlay">Start Playing</button>
   </div>
 </div>
 
 <!-- CATEGORY -->
 <div id="pCategory" class="page">
   <div class="container" style="padding-top:40px">
-    <div class="nav-row"><button class="back-btn" onclick="showPage('pLanding')">← Back</button></div>
-    <div class="section-title">Choose Categories</div>
-    <div class="section-sub">Select one or more categories, or pick All / Random Mix</div>
+    <div class="nav-row"><button class="back-btn" data-i18n="back" onclick="showPage('pLanding')">← Back</button></div>
+    <div class="section-title" data-i18n="chooseCats">Choose Categories</div>
+    <div class="section-sub" data-i18n="chooseCatsSub">Select one or more categories, or pick All / Random Mix</div>
     <div class="cat-grid" id="catGrid"></div>
     <div style="text-align:center;margin-top:8px">
-      <button class="btn btn-primary" id="startFromCat" onclick="showPage('pSettings')" style="display:none">Continue →</button>
+      <button class="btn btn-primary" id="startFromCat" onclick="showPage('pSettings')" style="display:none" data-i18n="continue">Continue →</button>
     </div>
   </div>
 </div>
@@ -141,21 +151,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 <!-- SETTINGS -->
 <div id="pSettings" class="page">
   <div class="container" style="padding-top:40px">
-    <div class="nav-row"><button class="back-btn" onclick="showPage('pCategory')">← Back</button></div>
-    <div class="section-title">Quiz Settings</div>
-    <div class="section-sub">Customize your quiz</div>
+    <div class="nav-row"><button class="back-btn" data-i18n="back" onclick="showPage('pCategory')">← Back</button></div>
+    <div class="section-title" data-i18n="quizSettings">Quiz Settings</div>
+    <div class="section-sub" data-i18n="quizSettingsSub">Customize your quiz</div>
     <div class="settings-grid">
       <div class="setting-group">
-        <label>Questions</label>
-        <select id="sCount"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option><option value="50">50</option><option value="0">All</option></select>
+        <label data-i18n="quesCount">Questions</label>
+        <select id="sCount"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option><option value="50">50</option><option value="0" data-i18n="allQuestions">All</option></select>
       </div>
       <div class="setting-group">
-        <label>Timer per Question</label>
-        <select id="sTimer"><option value="10">10 seconds</option><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option><option value="0">No limit</option></select>
+        <label data-i18n="timer">Timer per Question</label>
+        <select id="sTimer"><option value="10">10</option><option value="15">15</option><option value="20" selected>20</option><option value="30">30</option><option value="45">45</option><option value="60">60</option><option value="0" data-i18n="noLimit">No limit</option></select>
       </div>
     </div>
     <div style="text-align:center">
-      <button class="btn btn-primary" onclick="startQuiz()">Start Quiz →</button>
+      <button class="btn btn-primary" id="settingsStartBtn" onclick="startQuiz()" data-i18n="startQuiz">Start Quiz →</button>
     </div>
   </div>
 </div>
@@ -181,18 +191,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
     <div class="results-box">
       <div class="results-score" id="rScore">0/10</div>
       <div class="results-pct" id="rPct">0%</div>
-      <div class="results-msg" id="rMsg">Nice try!</div>
+<div class="results-msg" id="rMsg">Nice try!</div>
       <div class="results-stats">
-        <div class="results-stat"><div class="val" id="rCorrect" style="color:var(--green)">0</div><div class="lbl">Correct</div></div>
-        <div class="results-stat"><div class="val" id="rWrong" style="color:var(--red)">0</div><div class="lbl">Wrong</div></div>
-        <div class="results-stat"><div class="val" id="rTime">0s</div><div class="lbl">Time</div></div>
+        <div class="results-stat"><div class="val" id="rCorrect" style="color:var(--green)">0</div><div class="lbl" data-i18n="correct">Correct</div></div>
+        <div class="results-stat"><div class="val" id="rWrong" style="color:var(--red)">0</div><div class="lbl" data-i18n="wrong">Wrong</div></div>
+        <div class="results-stat"><div class="val" id="rTime">0s</div><div class="lbl" data-i18n="time">Time</div></div>
       </div>
       <div class="results-actions">
-        <button class="btn btn-primary btn-sm" onclick="startQuiz()">Play Again</button>
-        <button class="btn btn-secondary btn-sm" onclick="showPage('pCategory')">Change Category</button>
-        <button class="btn btn-secondary btn-sm" onclick="shareResult()">Share Result</button>
+        <button class="btn btn-primary btn-sm" data-i18n="playAgain" onclick="startQuiz()">Play Again</button>
+        <button class="btn btn-secondary btn-sm" data-i18n="changeCat" onclick="showPage('pCategory')">Change Category</button>
+        <button class="btn btn-secondary btn-sm" data-i18n="shareResult" onclick="shareResult()">Share Result</button>
       </div>
-<div class="review-list" id="reviewList"></div>
+<div class="review-list" id="reviewList"><div style="font-weight:700;margin-bottom:8px;font-size:14px" id="reviwLbl" data-i18n="review">Review</div></div>
     </div>
   </div>
 </div>
@@ -201,7 +211,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   <label>Music Volume</label>
   <input type="range" id="musicVol" min="0" max="1" step="0.05" value="0.5">
 </div>
+<div class="voice-pop" id="langPop" style="width:auto">
+  <label data-i18n="langTitle">Language</label>
+  <div class="lang-row" id="langRow"></div>
+</div>
 <div class="audio-fab">
+  <button class="audio-btn" id="langBtn" title="Language">🌐</button>
   <button class="audio-btn on" id="musicBtn" title="Background music">🎵</button>
 </div>
 
@@ -1261,8 +1276,9 @@ var quiz=[],qi=0,score=0,answered=false,timerInterval=null,timeLeft=0,totalTime=
 
 /* ===== AUDIO ENGINE (music only) ===== */
 var audioCtx=null,musicOn=true,musicGain=null,musicTimer=null,musicStep=0,musicNextTime=0;
-var RELAX=[261.63,329.63,392,440,523.25,659.25,523.25,440,392,329.63,293.66,261.63,329.63,392,523.25,659.25,783.99,659.25,523.25,392,440,392,329.63,293.66];
-var RELAXBASS=[130.81,130.81,130.81,130.81,98,98,98,98,130.81,130.81,146.83,146.83,174.61,174.61,196,196,220,220,196,196,130.81,130.81,98,98];
+var CLASSCHORDS=[[146.83,220,293.66],[110,164.81,220],[123.47,185,246.94],[92.5,138.59,184.99],[98,146.83,196],[146.83,220,293.66],[98,146.83,196],[110,164.81,220]];
+var CLASSBASS=[73.42,55,61.74,46.25,49,73.42,49,55];
+var CLASSPAT=[0,1,2,1,0,2,1,0,1,2,1,0,2,1,0,2];
 function ensureAudio(){if(audioCtx)return true;try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return false}return !!audioCtx}
 function loadSettings(){var ms=localStorage.getItem('ql_music');if(ms!==null)musicOn=ms==='1';var mv=localStorage.getItem('ql_musicvol');if(mv!==null)document.getElementById('musicVol').value=mv}
 function saveSettings(){localStorage.setItem('ql_music',musicOn?'1':'0');localStorage.setItem('ql_musicvol',document.getElementById('musicVol').value)}
@@ -1271,18 +1287,40 @@ function updateMusicBtns(){var mb=document.getElementById('musicBtn');if(musicOn
 function toggleVoicePop(){var vp=document.getElementById('voicePop');vp.classList.toggle('visible')}
 function stopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}if(musicGain){musicGain.disconnect();musicGain=null}}
 function startMusic(){if(!audioCtx||!musicOn)return;if(musicGain)return;musicGain=audioCtx.createGain();musicGain.gain.value=parseFloat(document.getElementById('musicVol').value);musicGain.connect(audioCtx.destination);musicStep=0;musicNextTime=audioCtx.currentTime+0.1;scheduleNotes();musicTimer=setInterval(scheduleNotes,26)}
-function scheduleNotes(){var lead=audioCtx.currentTime+0.7;while(musicNextTime<lead){if(musicStep%24===0){var b=audioCtx.createGain();b.gain.setValueAtTime(0.0001,musicNextTime);b.gain.linearRampToValueAtTime(0.5,musicNextTime+0.08);b.gain.exponentialRampToValueAtTime(0.0001,musicNextTime+1.4);var bo=audioCtx.createOscillator();bo.type='sine';bo.frequency.value=RELAXBASS[musicStep%24];bo.connect(b);b.connect(musicGain);bo.start(musicNextTime);bo.stop(musicNextTime+1.5)}
-var freq=RELAX[musicStep%24];var osc=audioCtx.createOscillator();osc.type='triangle';osc.frequency.value=freq;var g=audioCtx.createGain();g.gain.setValueAtTime(0.0001,musicNextTime);g.gain.linearRampToValueAtTime(0.45,musicNextTime+0.12);g.gain.exponentialRampToValueAtTime(0.0001,musicNextTime+1.0);var vib=audioCtx.createOscillator();vib.frequency.value=5;var vibG=audioCtx.createGain();vibG.gain.value=3;osc.frequency.connect(vibG);vib.connect(vibG);vibG.connect(osc.frequency);osc.connect(g);g.connect(musicGain);vib.start(musicNextTime);vib.stop(musicNextTime+1.05);osc.start(musicNextTime);osc.stop(musicNextTime+1.05);musicNextTime+=0.27}}
+function pluck(freq,when,dur,vol,type){var osc=audioCtx.createOscillator();osc.type=type||'triangle';osc.frequency.value=freq;var g=audioCtx.createGain();g.gain.setValueAtTime(0.0001,when);g.gain.linearRampToValueAtTime(vol,when+0.008);g.gain.exponentialRampToValueAtTime(0.0001,when+dur);osc.connect(g);g.connect(musicGain);osc.start(when);osc.stop(when+dur+0.02);return osc}
+function scheduleNotes(){var lead=audioCtx.currentTime+0.8;var stepDur=0.24;while(musicNextTime<lead){var bar=Math.floor(musicStep/16)%8;var chord=CLASSCHORDS[bar];var chordFreq=chord[CLASSPAT[musicStep%16]]*2;pluck(chordFreq,musicNextTime,0.5,0.14,'triangle');pluck(chordFreq*2,musicNextTime,0.5,0.06,'triangle');if(musicStep%4===0){pluck(CLASSBASS[bar],musicNextTime,1.1,0.24,'sine')}if(musicStep%16===0){pluck(chord[2]*4,musicNextTime,1.6,0.05,'sine')}musicStep++;musicNextTime+=stepDur}}
 function bindAudio(){updateMusicBtns();var mb=document.getElementById('musicBtn');mb.onclick=toggleMusic;document.getElementById('musicVol').oninput=function(){saveSettings();if(musicGain)musicGain.gain.value=parseFloat(this.value)};document.addEventListener('click',function one(){if(ensureAudio()&&audioCtx.state==='suspended')audioCtx.resume();document.removeEventListener('click',one)},true)}
+
+/* ===== TRANSLATION ===== */
+var LANGS={en:['English','en'],ar:['العربية','ar'],fr:['Français','fr'],es:['Español','es'],de:['Deutsch','de'],hi:['हिन्दी','hi'],ur:['اردو','ur']};
+var LANG='en';
+var I18N={
+en:{langTitle:'Language',heroSub:'Test your knowledge across 25+ categories with over 1000 hard questions',startPlay:'Start Playing',back:'← Back',chooseCats:'Choose Categories',chooseCatsSub:'Select one or more categories, or pick All / Random Mix',allCats:'All Categories',allQuestions:'All',randomMix:'Random Mix',questions:'Questions',categories:'Categories',highScore:'High Score',continue:'Continue →',quizSettings:'Quiz Settings',quizSettingsSub:'Customize your quiz',quesCount:'Questions',timer:'Timer per Question',seconds:'seconds',secondsShort:'sec',noLimit:'No limit',startQuiz:'Start Quiz →',question:'Question',of:'of',playAgain:'Play Again',changeCat:'Change Category',shareResult:'Share Result',correct:'Correct',wrong:'Wrong',time:'Time',keepPracticing:'Keep practicing!',outstanding:'Outstanding! You are a genius!',greatJob:'Great job! Well done!',notBad:'Not bad! Keep going!',niceTry:'Nice try! Practice makes perfect!',review:'Review',answer:'Answer',trNote:'Translating...',shareText:'Wonderingland: ',copied:'Copied to clipboard!'},
+ar:{langTitle:'اللغة',heroSub:'اختبر معلوماتك في أكثر من 25 فئة مع أكثر من 1000 سؤال صعب',startPlay:'ابدأ اللعب',back:'↩ رجوع',chooseCats:'اختر الفئات',chooseCatsSub:'اختر فئة أو أكثر، أو اختر الكل / خليط عشوائي',allCats:'كل الفئات',allQuestions:'الكل',randomMix:'خليط عشوائي',questions:'سؤال',categories:'فئات',highScore:'أعلى نتيجة',continue:'متابعة ←',quizSettings:'إعدادات الاختبار',quizSettingsSub:'خصّص اختبارك',quesCount:'عدد الأسئلة',timer:'المؤقت لكل سؤال',seconds:'ثانية',secondsShort:'ث',noLimit:'بدون حد',startQuiz:'ابدأ الاختبار →',question:'سؤال',of:'من',playAgain:'العب مرة أخرى',changeCat:'تغيير الفئة',shareResult:'مشاركة النتيجة',correct:'صحيح',wrong:'خطأ',time:'الوقت',keepPracticing:'واصل المحاولة!',outstanding:'مذهل! أنت عبقري!',greatJob:'عمل رائع! أحسنت!',notBad:'ليس سيئًا! استمر!',niceTry:'محاولة جيدة! التمرين يصنع الإتقان!',review:'المراجعة',answer:'الإجابة',trNote:'جاري الترجمة...',shareText:'Wonderingland: ',copied:'تم النسخ إلى الحافظة!'},
+fr:{langTitle:'Langue',heroSub:'Testez vos connaissances dans plus de 25 catégories avec plus de 1000 questions difficiles',startPlay:'Commencer',back:'← Retour',chooseCats:'Choisir les catégories',chooseCatsSub:'Sélectionnez une ou plusieurs catégories, ou Tout / Mélange aléatoire',allCats:'Toutes les catégories',allQuestions:'Tout',randomMix:'Mélange aléatoire',questions:'Questions',categories:'Catégories',highScore:'Meilleur score',continue:'Continuer →',quizSettings:'Paramètres du quiz',quizSettingsSub:'Personnalisez votre quiz',quesCount:'Questions',timer:'Temps par question',seconds:'secondes',secondsShort:'s',noLimit:'Sans limite',startQuiz:'Commencer le quiz →',question:'Question',of:'sur',playAgain:'Rejouer',changeCat:'Changer la catégorie',shareResult:'Partager le résultat',correct:'Correct',wrong:'Faux',time:'Temps',keepPracticing:'Continuez à vous entraîner !',outstanding:'Exceptionnel ! Vous êtes un génie !',greatJob:'Excellent travail ! Bien joué !',notBad:'Pas mal ! Continuez !',niceTry:'Belle tentative ! La pratique rend parfait !',review:'Révision',answer:'Réponse',trNote:'Traduction...',shareText:'Wonderingland: ',copied:'Copié dans le presse-papiers !'},
+es:{langTitle:'Idioma',heroSub:'Pon a prueba tus conocimientos en más de 25 categorías con más de 1000 preguntas difíciles',startPlay:'Comenzar',back:'← Volver',chooseCats:'Elegir categorías',chooseCatsSub:'Seleccione una o más categorías, o Todas / Mezcla aleatoria',allCats:'Todas las categorías',allQuestions:'Todas',randomMix:'Mezcla aleatoria',questions:'Preguntas',categories:'Categorías',highScore:'Puntuación más alta',continue:'Continuar →',quizSettings:'Configuración del quiz',quizSettingsSub:'Personaliza tu quiz',quesCount:'Preguntas',timer:'Tiempo por pregunta',seconds:'segundos',secondsShort:'s',noLimit:'Sin límite',startQuiz:'Comenzar quiz →',question:'Pregunta',of:'de',playAgain:'Jugar de nuevo',changeCat:'Cambiar categoría',shareResult:'Compartir resultado',correct:'Correcto',wrong:'Incorrecto',time:'Tiempo',keepPracticing:'¡Sigue practicando!',outstanding:'¡Increíble! ¡Eres un genio!',greatJob:'¡Gran trabajo! ¡Bien hecho!',notBad:'¡No está mal! ¡Sigue!',niceTry:'¡Buen intento! ¡La práctica hace al maestro!',review:'Repaso',answer:'Respuesta',trNote:'Traduciendo...',shareText:'Wonderingland: ',copied:'¡Copiado al portapapeles!'},
+de:{langTitle:'Sprache',heroSub:'Teste dein Wissen in über 25 Kategorien mit über 1000 schwierigen Fragen',startPlay:'Spielen starten',back:'← Zurück',chooseCats:'Kategorien wählen',chooseCatsSub:'Wählen Sie eine oder mehrere Kategorien oder Alle / Zufalls-Mix',allCats:'Alle Kategorien',allQuestions:'Alle',randomMix:'Zufalls-Mix',questions:'Fragen',categories:'Kategorien',highScore:'Höchstpunktzahl',continue:'Weiter →',quizSettings:'Quiz-Einstellungen',quizSettingsSub:'Quiz anpassen',quesCount:'Fragen',timer:'Zeit pro Frage',seconds:'Sekunden',secondsShort:'s',noLimit:'Keine Begrenzung',startQuiz:'Quiz starten →',question:'Frage',of:'von',playAgain:'Nochmal spielen',changeCat:'Kategorie ändern',shareResult:'Ergebnis teilen',correct:'Richtig',wrong:'Falsch',time:'Zeit',keepPracticing:'Übe weiter!',outstanding:'Herausragend! Du bist ein Genie!',greatJob:'Tolle Arbeit! Gut gemacht!',notBad:'Nicht schlecht! Weiter so!',niceTry:'Guter Versuch! Übung macht den Meister!',review:'Überblick',answer:'Antwort',trNote:'Übersetzen...',shareText:'Wonderingland: ',copied:'In die Zwischenablage kopiert!'},
+hi:{langTitle:'भाषा',heroSub:'25+ श्रेणियों और 1000+ कठिन प्रश्नों में अपने ज्ञान का परीक्षण करें',startPlay:'खेलना शुरू करें',back:'← पीछे',chooseCats:'श्रेणियाँ चुनें',chooseCatsSub:'एक या अधिक श्रेणियाँ चुनें, या सभी / रैंडम मिक्स चुनें',allCats:'सभी श्रेणियाँ',allQuestions:'सभी',randomMix:'रैंडम मिक्स',questions:'प्रश्न',categories:'श्रेणियाँ',highScore:'उच्च स्कोर',continue:'जारी रखें →',quizSettings:'क्विज़ सेटिंग्स',quizSettingsSub:'अपना क्विज़ कस्टमाइज़ करें',quesCount:'प्रश्न',timer:'प्रति प्रश्न समय',seconds:'सेकंड',secondsShort:'से',noLimit:'कोई सीमा नहीं',startQuiz:'क्विज़ शुरू करें →',question:'प्रश्न',of:'में से',playAgain:'फिर से खेलें',changeCat:'श्रेणी बदलें',shareResult:'परिणाम साझा करें',correct:'सही',wrong:'गलत',time:'समय',keepPracticing:'अभ्यास करते रहें!',outstanding:'शानदार! आप प्रतिभाशाली हैं!',greatJob:'बहुत बढ़िया! शाबाश!',notBad:'बुरा नहीं! चलते रहो!',niceTry:'अच्छी कोशिश! अभ्यास से पूर्णता मिलती है!',review:'समीक्षा',answer:'उत्तर',trNote:'अनुवाद हो रहा है...',shareText:'Wonderingland: ',copied:'क्लिपबोर्ड पर कॉपी हो गया!'},
+ur:{langTitle:'زبان',heroSub:'25+ زمروں اور 1000+ مشکل سوالوں میں اپنے علم کا امتحان لیں',startPlay:'کھیلنا شروع کریں',back:'← واپس',chooseCats:'زمرے منتخب کریں',chooseCatsSub:'ایک یا زیادہ زمرے منتخب کریں، یا تمام / بے ترتیب مکس',allCats:'تمام زمرے',allQuestions:'تمام',randomMix:'بے ترتیب مکس',questions:'سوالات',categories:'زمرے',highScore:'اعلیٰ سکور',continue:'جاری رکھیں →',quizSettings:'کوئز کی ترتیبات',quizSettingsSub:'اپنا کوئز اپنی مرضی کے مطابق بنائیں',quesCount:'سوالات',timer:'فی سوال وقت',seconds:'سیکنڈ',secondsShort:'س',noLimit:'کوئی حد نہیں',startQuiz:'کوئز شروع کریں →',question:'سوال',of:'میں سے',playAgain:'دوبارہ کھیلیں',changeCat:'زمرہ تبدیل کریں',shareResult:'نتیجہ شیئر کریں',correct:'درست',wrong:'غلط',time:'وقت',keepPracticing:'مشق جاری رکھیں!',outstanding:'شاہکار! آپ ذہین ہیں!',greatJob:'بہت خوب! شاباش!',notBad:'برا نہیں! جاری رکھیں!',niceTry:'اچھی کوشش! مشق سے مہارت ملتی ہے!',review:'جائزہ',answer:'جواب',trNote:'ترجمہ ہو رہا ہے...',shareText:'Wonderingland: ',copied:'کلپ بورڈ میں کاپی ہو گیا!'}};
+var RTL={'ar':1,'ur':1};
+function t(key){var d=I18N[LANG]||I18N.en;return d[key]!==undefined?d[key]:(I18N.en[key]!==undefined?I18N.en[key]:key)}
+function setLang(code,save){LANG=code;document.documentElement.lang=code;document.documentElement.setAttribute('dir',RTL[code]?'rtl':'ltr');document.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=t(el.getAttribute('data-i18n'))});var rev=document.getElementById('reviwLbl');if(rev)rev.textContent=t('review');buildCategories();updateResultMsgs();refreshTr();document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.dataset.lang===code)});if(save!==false)localStorage.setItem('ql_lang',code)}
+function buildLangMenu(){var row=document.getElementById('langRow');row.innerHTML='';Object.keys(LANGS).forEach(function(code){var b=document.createElement('button');b.className='lang-btn'+(code===LANG?' active':'');b.dataset.lang=code;b.textContent=LANGS[code][0];b.onclick=function(){setLang(code);toggleLangPop(false)};row.appendChild(b)});document.getElementById('langBtn').onclick=function(){toggleLangPop()}}
+function toggleLangPop(force){var lp=document.getElementById('langPop');if(force===false)lp.classList.remove('visible');else lp.classList.toggle('visible')}
+function hashStr(s){var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))&0x7fffffff}return h.toString(36)}
+function qCacheKey(code,text){return 'ql_tr_'+code+'_'+text.length+'_'+hashStr(text)}
+function translateGoogle(texts,target){return new Promise(function(resolve){if(!texts.length||target==='en'){resolve(texts);return}var joined='';texts.forEach(function(s,ix){joined+=(ix?'\n':'')+s});try{var xhr=new XMLHttpRequest();xhr.open('GET','https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=auto&tl='+target+'&dt=t&q='+encodeURIComponent(joined));xhr.timeout=9000;xhr.onload=function(){try{if(xhr.status!==200){resolve(texts);return}var data=JSON.parse(xhr.responseText);var translated='';if(data[0]){data[0].forEach(function(se){translated+=se[0]})}var parts=translated.split('\n');while(parts.length<texts.length)parts.push(texts[parts.length]);resolve(parts.slice(0,texts.length))}catch(e){resolve(texts)}};xhr.onerror=function(){resolve(texts)};xhr.send()}catch(e){resolve(texts)}})}
+function refreshTr(){var els=[].slice.call(document.querySelectorAll('[data-tr]'));if(!els.length)return;if(LANG==='en'){els.forEach(function(el){el.textContent=el.getAttribute('data-tr')});return}var todo=[];els.forEach(function(el){var key=el.getAttribute('data-tr');var ck=qCacheKey(LANG,key);var cached=localStorage.getItem(ck);if(cached){el.textContent=cached}else{todo.push(el)}});if(!todo.length)return;var keys=todo.map(function(el){return el.getAttribute('data-tr')});todo.forEach(function(el){el.classList.add('translating');el.textContent=t('trNote')});translateGoogle(keys,LANG).then(function(res){res.forEach(function(val,ix){var el=todo[ix];if(!el)return;try{localStorage.setItem(qCacheKey(LANG,keys[ix]),val)}catch(e){}el.textContent=val;el.classList.remove('translating')})})}
+function updateResultMsgs(){var statLbl=document.querySelectorAll('.results-stat .lbl');if(statLbl.length===3){statLbl[0].textContent=t('correct');statLbl[1].textContent=t('wrong');statLbl[2].textContent=t('time')}}
 
 function showPage(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById(id).classList.add('active');if(id==='pLanding')initLanding()}
 function initLanding(){document.getElementById('totalQ').textContent=BANK.length;document.getElementById('totalC').textContent=catNames.length;var hs=parseInt(localStorage.getItem('ql_hs')||'0');document.getElementById('totalHS').textContent=hs}
 
 function buildCategories(){var g=document.getElementById('catGrid');g.innerHTML='';
-var all=document.createElement('div');all.className='cat-card selected';all.innerHTML='<div class="cat-name">All Categories</div><div class="cat-count">'+BANK.length+' questions</div>';all.onclick=function(){selCats={};document.querySelectorAll('.cat-card').forEach(function(c){c.classList.remove('selected')});all.classList.add('selected');document.getElementById('startFromCat').style.display=''};g.appendChild(all);
-var rnd=document.createElement('div');rnd.className='cat-card';rnd.innerHTML='<div class="cat-name">🎲 Random Mix</div><div class="cat-count">'+BANK.length+' questions</div>';rnd.onclick=function(){selCats={'__random__':1};document.querySelectorAll('.cat-card').forEach(function(c){c.classList.remove('selected')});rnd.classList.add('selected');document.getElementById('startFromCat').style.display=''};g.appendChild(rnd);
-catNames.forEach(function(name){var c=document.createElement('div');c.className='cat-card';c.innerHTML='<div class="cat-name">'+name+'</div><div class="cat-count">'+CATS[name]+' questions</div>';c.onclick=function(){delete selCats['__random__'];all.classList.remove('selected');rnd.classList.remove('selected');if(selCats[name]){delete selCats[name];c.classList.remove('selected')}else{selCats[name]=1;c.classList.add('selected')}document.getElementById('startFromCat').style.display=Object.keys(selCats).length?'':'none'};g.appendChild(c)});
-document.getElementById('startFromCat').style.display='none'}
+var all=document.createElement('div');all.className='cat-card'+(LANG==='en'?' selected':'');all.innerHTML='<div class="cat-name" data-i18n="allCats">'+t('allCats')+'</div><div class="cat-count" id="allCatCount">'+BANK.length+' '+t('questions')+'</div>';all.onclick=function(){selCats={};document.querySelectorAll('.cat-card').forEach(function(c){c.classList.remove('selected')});all.classList.add('selected');document.getElementById('startFromCat').style.display=''};g.appendChild(all);
+var rnd=document.createElement('div');rnd.className='cat-card';rnd.innerHTML='<div class="cat-name">🎲 <span data-tr="Random Mix">Random Mix</span></div><div class="cat-count">'+BANK.length+' '+t('questions')+'</div>';rnd.onclick=function(){selCats={'__random__':1};document.querySelectorAll('.cat-card').forEach(function(c){c.classList.remove('selected')});rnd.classList.add('selected');document.getElementById('startFromCat').style.display=''};g.appendChild(rnd);
+catNames.forEach(function(name){var c=document.createElement('div');c.className='cat-card';c.innerHTML='<div class="cat-name" data-tr="'+name+'">'+name+'</div><div class="cat-count">'+CATS[name]+' '+t('questions')+'</div>';c.onclick=function(){delete selCats['__random__'];all.classList.remove('selected');rnd.classList.remove('selected');if(selCats[name]){delete selCats[name];c.classList.remove('selected')}else{selCats[name]=1;c.classList.add('selected')}document.getElementById('startFromCat').style.display=Object.keys(selCats).length?'':'none'};g.appendChild(c);if(selCats[name])c.classList.add('selected')});
+var showBtn=document.getElementById('startFromCat');if(Object.keys(selCats).length===0){all.classList.add('selected')}else{showBtn.style.display=''}}
 
 function startQuiz(){if(ensureAudio()&&audioCtx.state==='suspended')audioCtx.resume();startMusic();var pool=[];if(selCats['__random__']||Object.keys(selCats).length===0){pool=BANK.slice()}else{BANK.forEach(function(q){if(selCats[q.c])pool.push(q)})}pool=shuffle(pool);var count=parseInt(document.getElementById('sCount').value);if(count===0)count=pool.length;quiz=pool.slice(0,count);qi=0;score=0;answered=false;totalTime=0;startTime=Date.now();showPage('pQuiz');showQuestion()}
 
@@ -1295,8 +1333,9 @@ function showAnswered(isCorrect,correctIdx){
   });
 }
 
-function showQuestion(){if(qi>=quiz.length){showResults();return}answered=false;var q=quiz[qi];document.getElementById('qCounter').textContent='Q '+(qi+1)+' / '+quiz.length;document.getElementById('qScore').textContent=score+' ✓';document.getElementById('qCategory').textContent=q.c;document.getElementById('qText').textContent=q.q;document.getElementById('progressFill').style.width=((qi/quiz.length)*100)+'%';
-var ob=document.getElementById('optionsBox');ob.innerHTML='';var letters=['A','B','C','D'];dispOrder=[];for(var i=0;i<q.o.length;i++)dispOrder.push(i);for(var i=dispOrder.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=dispOrder[i];dispOrder[i]=dispOrder[j];dispOrder[j]=t}dispOrder.forEach(function(orig,i){var d=document.createElement('div');d.className='option';d.dataset.idx=i;d.dataset.orig=orig;d.innerHTML='<div class="letter">'+letters[i]+'</div><div>'+q.o[orig]+'</div>';d.onclick=function(){selectAnswer(i)};ob.appendChild(d)});
+function showQuestion(){if(qi>=quiz.length){showResults();return}answered=false;var q=quiz[qi];document.getElementById('qCounter').textContent='Q '+(qi+1)+' / '+quiz.length;document.getElementById('qScore').textContent=score+' ✓';document.getElementById('qCategory').textContent=q.c;document.getElementById('qCategory').setAttribute('data-tr',q.c);var qt=document.getElementById('qText');qt.setAttribute('data-tr',q.q);qt.textContent=q.q;document.getElementById('progressFill').style.width=((qi/quiz.length)*100)+'%';
+var ob=document.getElementById('optionsBox');ob.innerHTML='';var letters=['A','B','C','D'];dispOrder=[];for(var i=0;i<q.o.length;i++)dispOrder.push(i);for(var i=dispOrder.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=dispOrder[i];dispOrder[i]=dispOrder[j];dispOrder[j]=t}dispOrder.forEach(function(orig,i){var d=document.createElement('div');d.className='option';d.dataset.idx=i;d.dataset.orig=orig;var inner=document.createElement('div');inner.setAttribute('data-tr',q.o[orig]);inner.textContent=q.o[orig];d.appendChild(document.createElement('div')).className='letter';d.querySelector('.letter').textContent=letters[i];d.appendChild(inner);d.onclick=function(){selectAnswer(i)};ob.appendChild(d)});
+refreshTr();
 var timer=parseInt(document.getElementById('sTimer').value);if(timer>0){timeLeft=timer;updateTimerDisplay();clearInterval(timerInterval);timerInterval=setInterval(function(){timeLeft--;updateTimerDisplay();if(timeLeft<=0){clearInterval(timerInterval);autoReveal()}},1000)}else{document.getElementById('timerText').textContent='∞';document.getElementById('timerFg').style.strokeDashoffset='0';document.getElementById('timerRing').classList.remove('urgent')}}
 
 function updateTimerDisplay(){var timer=parseInt(document.getElementById('sTimer').value);document.getElementById('timerText').textContent=timeLeft;var circ=131.95;var pct=timer>0?timeLeft/timer:1;document.getElementById('timerFg').style.strokeDashoffset=circ*(1-pct);var ring=document.getElementById('timerRing');if(timeLeft<=5&&timer>0)ring.classList.add('urgent');else ring.classList.remove('urgent')}
@@ -1306,19 +1345,19 @@ function selectAnswer(idx){if(answered)return;answered=true;clearInterval(timerI
 function autoReveal(){if(answered)return;answered=true;var q=quiz[qi];var opts=document.querySelectorAll('.option');opts.forEach(function(o){o.classList.add('disabled');if(parseInt(o.dataset.orig)===q.a)o.classList.add('correct')});setTimeout(function(){qi++;showQuestion()},1400)}
 
 function showResults(){clearInterval(timerInterval);totalTime=Math.round((Date.now()-startTime)/1000);var pct=Math.round((score/quiz.length)*100);document.getElementById('rScore').textContent=score+'/'+quiz.length;document.getElementById('rPct').textContent=pct+'%';document.getElementById('rCorrect').textContent=score;document.getElementById('rWrong').textContent=quiz.length-score;document.getElementById('rTime').textContent=formatTime(totalTime);
-var msg='Keep practicing!';if(pct>=90)msg='Outstanding! You are a genius!';else if(pct>=70)msg='Great job! Well done!';else if(pct>=50)msg='Not bad! Keep going!';else if(pct>=30)msg='Nice try! Practice makes perfect!';document.getElementById('rMsg').textContent=msg;
+var msg='Keep practicing!';if(pct>=90)msg='Outstanding! You are a genius!';else if(pct>=70)msg='Great job! Well done!';else if(pct>=50)msg='Not bad! Keep going!';else if(pct>=30)msg='Nice try! Practice makes perfect!';document.getElementById('rMsg').textContent=t(msg);
 var hs=parseInt(localStorage.getItem('ql_hs')||'0');if(score>hs){localStorage.setItem('ql_hs',String(score));hs=score}
-var rl=document.getElementById('reviewList');rl.innerHTML='<div style="font-weight:700;margin-bottom:8px;font-size:14px">Review</div>';quiz.forEach(function(q,i){var letters=['A','B','C','D'];var d=document.createElement('div');d.className='review-item review-correct';d.innerHTML='<div class="review-q">'+(i+1)+'. '+q.q+'</div><div class="review-a">Answer: <span>'+letters[q.a]+') '+q.o[q.a]+'</span></div>';rl.appendChild(d)});
+var rl=document.getElementById('reviewList');rl.innerHTML='';var rLbl=document.createElement('div');rLbl.style.fontWeight='700';rLbl.style.marginBottom='8px';rLbl.setAttribute('data-i18n','review');rLbl.textContent=t('review');rl.appendChild(rLbl);quiz.forEach(function(q,i){var letters=['A','B','C','D'];var d=document.createElement('div');d.className='review-item review-correct';var qD=document.createElement('div');qD.className='review-q';var qNum=document.createElement('span');qNum.textContent=(i+1)+'. ';var qTx=document.createElement('span');qTx.setAttribute('data-tr',q.q);qTx.textContent=q.q;qD.appendChild(qNum);qD.appendChild(qTx);var aD=document.createElement('div');aD.className='review-a';var aLbl=document.createElement('span');aLbl.textContent=t('answer')+': ';var aTx=document.createElement('span');aTx.setAttribute('data-tr',letters[q.a]+') '+q.o[q.a]);aTx.textContent=letters[q.a]+') '+q.o[q.a];aD.appendChild(aLbl);aD.appendChild(aTx);d.appendChild(qD);d.appendChild(aD);rl.appendChild(d)});refreshTr();
 showPage('pResults')}
 
-function shareResult(){var txt='Wonderingland: '+score+'/'+quiz.length+' ('+Math.round(score/quiz.length*100)+'%) across '+quiz.length+' questions!';if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){alert('Copied to clipboard!')})}else{prompt('Copy this:',txt)}}
+function shareResult(){var txt=t('shareText')+score+'/'+quiz.length+' ('+Math.round(score/quiz.length*100)+'%) across '+quiz.length+' questions!';if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){alert(t('copied'))})}else{prompt('Copy this:',txt)}}
 
 function formatTime(s){if(s<60)return s+'s';return Math.floor(s/60)+'m '+s%60+'s'}
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 
 document.addEventListener('keydown',function(e){if(!document.getElementById('pQuiz').classList.contains('active'))return;if(answered)return;var map={1:0,2:1,3:2,4:3};if(e.key in map)selectAnswer(map[e.key])});
 
-buildCategories();initLanding();loadSettings();bindAudio();
+var savedLang=localStorage.getItem('ql_lang');if(savedLang&&LANGS[savedLang])setLang(savedLang,false);buildLangMenu();buildCategories();initLanding();loadSettings();bindAudio();
 </script>
 </body>
 </html>
